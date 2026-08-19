@@ -9,6 +9,8 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:pg": "REQUIRE_PG_TESTS=1 vitest run tests/integration/postgres.test.ts",
+    "eval": "vitest run --disableConsoleIntercept tests/eval/offline.eval.test.ts",
     "e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate"

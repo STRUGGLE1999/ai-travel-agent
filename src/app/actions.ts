@@ -18,10 +18,20 @@ import {
   updateConstraint,
 } from "@/application/use-cases";
 import { getEnv } from "@/lib/env";
+import { CsrfOriginError } from "@/server/csrf";
+import { assertSameOriginRequest } from "@/server/csrf-request";
 import type { ActorContext } from "@/application/use-cases";
 import type { BookingTask } from "@/domain";
 
 async function actor(): Promise<ActorContext> {
+  try {
+    await assertSameOriginRequest();
+  } catch (error) {
+    if (error instanceof CsrfOriginError) {
+      redirect(`/?error=${encodeURIComponent(error.message)}`);
+    }
+    throw error;
+  }
   const repos = getRepositories();
   const { sessionId, ipHash } = await getOrCreateSession(repos);
   return { repos, sessionId, ipHash };

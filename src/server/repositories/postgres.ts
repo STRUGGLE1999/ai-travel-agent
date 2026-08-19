@@ -1,4 +1,4 @@
-import { and, eq, sql } from "drizzle-orm";
+import { and, eq, gt, isNull, or, sql } from "drizzle-orm";
 import { getDb } from "@/server/db/client";
 import * as tables from "@/server/db/schema";
 import {
@@ -601,6 +601,10 @@ export function createPostgresRepositories(): Repositories {
               eq(tables.llmCache.taskType, input.taskType),
               eq(tables.llmCache.inputHash, input.inputHash),
               eq(tables.llmCache.model, input.model),
+              or(
+                isNull(tables.llmCache.expiresAt),
+                gt(tables.llmCache.expiresAt, new Date()),
+              ),
             ),
           )
           .limit(1);

@@ -20,3 +20,8 @@ export function getDb(): Db {
 
   return globalForDb.tripproofDb;
 }
+
+/** Test helper: drop the cached Neon client after stubbing DATABASE_URL. */
+export function resetDbClient(): void {
+  globalForDb.tripproofDb = undefined;
+}

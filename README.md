@@ -63,6 +63,7 @@ LLM_CACHE_TTL_SECONDS=86400
 ## 隐私边界
 
 - 导入的原始文本与结构化解析结果保存在你部署的数据库（或本地内存仓储）中，仅当前匿名会话可访问；每个行程通过 HttpOnly 会话 Cookie 做属主校验，清除 Cookie 或换浏览器即获得全新的隔离会话；
+- 写操作（Server Actions）在框架自带 Origin 校验之外，再显式核对 `Origin` / `Referer` 与 `Host` / `X-Forwarded-Host`，跨站带 Cookie 提交会被拒绝；
 - 不保存原始 IP：仅在配置 `RATE_LIMIT_SALT` 时保存加盐哈希用于限流；没有盐值时完全不生成 IP 哈希；
 - API Key、Base URL、认证头不写入日志、缓存或任何持久化记录；
 - LLM 缓存只存放规范化输入的哈希与通过 Zod 校验后的输出，且会按 TTL 过期。
@@ -73,7 +74,9 @@ LLM_CACHE_TTL_SECONDS=86400
 npm run dev          # 开发服务器
 npm run build        # 生产构建（离线可用，无外网字体依赖）
 npm run lint         # ESLint
-npm test             # Vitest 单元测试
+npm test             # Vitest 单元测试（含离线 AI Eval；无 TEST_DATABASE_URL 时跳过 Postgres 集成测试）
+npm run eval         # 固定数据集上的可重复离线评测（Fake AI + 确定性规则，不打真实模型）
+npm run test:pg      # 可选 PostgreSQL 集成测试（需要 TEST_DATABASE_URL，勿指向生产库）
 npm run e2e          # Playwright E2E（自动以 DEMO 模式启动，不消耗模型额度）
 npm run db:generate  # 由 Drizzle Schema 生成 migration
 npm run db:migrate   # 执行 migration（需 DATABASE_URL）
@@ -101,6 +104,7 @@ UI（App Router 页面 + Server Actions）
   → application/use-cases（业务编排）
   → domain（Zod Schema、状态机、确定性规划/可行性/变更引擎）
   → services/ai（Sanitizer、Fake AI、Anthropic 兼容 Adapter、限流缓存降级门）
+  → evals（离线金标集，`npm run eval`，不调用真实模型）
   → server/repositories（内存 / Neon PostgreSQL，接口一致）
   → fixtures（香港/北京确定性演示数据）
 ```
