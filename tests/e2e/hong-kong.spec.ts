@@ -17,8 +17,9 @@ async function confirmAllConstraints(page: Page): Promise<void> {
 
 test("home page loads in demo mode", async ({ page }) => {
   await page.goto("/");
+  await expect(page.getByText("风来成行").first()).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "先验证，再出发。" }),
+    page.getByRole("heading", { name: "懂变化的 AI 旅行搭子。" }),
   ).toBeVisible();
   await expect(page.getByText("演示模式")).toBeVisible();
 });
