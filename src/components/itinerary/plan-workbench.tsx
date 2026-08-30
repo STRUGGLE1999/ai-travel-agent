@@ -117,6 +117,16 @@ export function PlanWorkbench({
   const labelFor = (name: string) =>
     name.length > 6 ? `${name.slice(0, 6)}…` : name;
 
+  // Highest-present conflict severity drives the accent line, reusing the
+  // same cinnabar/warning/info ladder as the conflict banner.
+  const severityAccent = (severities: string[]): string | null => {
+    if (severities.includes("BLOCKING")) return "border-l-cinnabar";
+    if (severities.includes("HIGH")) return "border-l-warning/60";
+    if (severities.includes("MEDIUM")) return "border-l-info/50";
+    if (severities.includes("LOW")) return "border-l-border";
+    return null;
+  };
+
   return (
     <div>
       {days.length > 1 ? (
@@ -184,6 +194,7 @@ export function PlanWorkbench({
           {dayItems.map((item) => {
             const isBlocking = item.conflictSeverities.includes("BLOCKING");
             const isSelected = selectedId === item.id;
+            const accent = severityAccent(item.conflictSeverities);
             return (
               <li
                 key={item.id}
@@ -207,7 +218,8 @@ export function PlanWorkbench({
                     isSelected
                       ? "border-primary/50"
                       : "border-border hover:bg-surface-muted",
-                    isBlocking && "border-l-4 border-l-cinnabar",
+                    accent && "border-l-4",
+                    accent,
                   )}
                 >
                   <div className="flex flex-wrap items-center gap-2">

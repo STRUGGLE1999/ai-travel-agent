@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { SiteHeader } from "@/components/layout/site-header";
+import { SiteHeader, type StatusTone } from "@/components/layout/site-header";
 import { TripNav } from "@/components/layout/trip-nav";
 import { getRuntimeInfo } from "@/lib/env";
 import { getRepositories } from "@/server/repositories";
@@ -16,6 +16,16 @@ const STATUS_LABEL: Record<TripStatus, string> = {
   BLOCKED: "存在阻断冲突",
   READY_WITH_WARNINGS: "可执行（有警示）",
   READY: "可执行",
+};
+
+const STATUS_TONE: Record<TripStatus, StatusTone> = {
+  DRAFT: "neutral",
+  NEEDS_CONFIRMATION: "warning",
+  PLANNING: "neutral",
+  VERIFYING: "info",
+  BLOCKED: "cinnabar",
+  READY_WITH_WARNINGS: "warning",
+  READY: "primary",
 };
 
 export default async function TripLayout({
@@ -36,11 +46,9 @@ export default async function TripLayout({
         dataMode={runtime.dataMode}
         persistenceLabel={runtime.persistenceLabel}
         demoReason={runtime.demoReason}
-        tripTitle={
-          trip
-            ? `${trip.title} · ${STATUS_LABEL[trip.status]}`
-            : "行程不存在"
-        }
+        tripTitle={trip ? trip.title : undefined}
+        statusLabel={trip ? STATUS_LABEL[trip.status] : undefined}
+        statusTone={trip ? STATUS_TONE[trip.status] : "neutral"}
       />
       <div className="mx-auto grid min-h-[calc(100vh-5.5rem)] max-w-6xl md:grid-cols-[11rem_1fr]">
         <TripNav tripId={id} />
