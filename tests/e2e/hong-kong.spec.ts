@@ -19,7 +19,7 @@ test("home page loads in demo mode", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByText("风来成行").first()).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "懂变化的 AI 旅行搭子。" }),
+    page.getByRole("heading", { name: "先确认，再成行。" }),
   ).toBeVisible();
   await expect(page.getByText("演示模式")).toBeVisible();
 });

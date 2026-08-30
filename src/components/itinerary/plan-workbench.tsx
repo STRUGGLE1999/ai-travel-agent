@@ -134,14 +134,20 @@ export function PlanWorkbench({
         ))}
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 md:gap-8">
+      <div className="flex flex-col gap-6 md:flex-row md:items-stretch md:gap-8">
         <ol
           aria-label="日程时间轴"
           className={cn(
-            "relative space-y-5 border-l border-border pl-5",
+            "relative flex-1 space-y-5 border-l-2 border-dashed border-cinnabar/40 pl-5 md:w-2/5 md:flex-none",
             mobileTab === "map" && "hidden md:block",
           )}
         >
+          <div
+            aria-hidden="true"
+            className="absolute -left-[31px] top-0 flex h-7 w-7 flex-col items-center justify-center rounded-[3px] bg-cinnabar font-display text-sm font-semibold text-danger-foreground"
+          >
+            行
+          </div>
           {dayItems.map((item) => {
             const isBlocking = item.conflictSeverities.includes("BLOCKING");
             const isSelected = selectedId === item.id;
@@ -154,10 +160,10 @@ export function PlanWorkbench({
                 <span
                   aria-hidden="true"
                   className={cn(
-                    "absolute -left-[27px] top-2 h-2.5 w-2.5 rounded-full border",
+                    "absolute -left-[27px] top-2 h-2.5 w-2.5 rounded-full border-2",
                     isBlocking
                       ? "border-cinnabar bg-cinnabar-wash"
-                      : "border-primary bg-primary/20",
+                      : "border-cinnabar bg-surface",
                   )}
                 />
                 <button
@@ -227,11 +233,11 @@ export function PlanWorkbench({
 
         <div
           className={cn(
-            "rounded-[3px] border border-border bg-surface p-3.5",
+            "flex flex-1 flex-col rounded-[3px] border border-border bg-surface p-4",
             mobileTab === "timeline" && "hidden md:block",
           )}
         >
-          <p className="mb-2 flex items-center gap-2 text-sm tracking-wide text-muted">
+          <p className="mb-3 flex items-center gap-2 text-sm tracking-wide text-muted">
             <span
               aria-hidden="true"
               className="font-display rounded-[2px] bg-warning/10 px-1.5 text-warning-foreground"
@@ -240,52 +246,55 @@ export function PlanWorkbench({
             </span>
             示意地图 · 路线为演示数据，不代表真实导航
           </p>
-          <svg
-            viewBox="0 0 100 100"
-            role="img"
-            aria-label={`Day ${activeDay} 行程示意地图`}
-            className="aspect-square w-full rounded-[2px] bg-[#ecf0e8]"
-          >
-            {routePoints ? (
-              <polyline
-                points={routePoints}
-                fill="none"
-                stroke="#34584e"
-                strokeWidth="0.8"
-                strokeDasharray="2 1.4"
-              />
-            ) : null}
-            {dayPlaces.map((place, index) => {
-              const isSelected = selectedItem?.placeId === place.placeId;
-              return (
-                <g
-                  key={place.placeId}
-                  onClick={() => selectMarker(place.placeId)}
-                  className="cursor-pointer"
-                  role="button"
-                  aria-label={`定位到 ${place.name}`}
-                >
-                  <circle
-                    cx={place.mapX}
-                    cy={place.mapY}
-                    r={isSelected ? 4 : 3}
-                    fill={isSelected ? "#a63a2f" : "#34584e"}
-                    stroke="#faf6ee"
-                    strokeWidth="0.8"
-                  />
-                  <text
-                    x={place.mapX}
-                    y={place.mapY - 5}
-                    textAnchor="middle"
-                    fontSize="3.4"
-                    fill="#2b2e2a"
+          <div className="flex min-h-0 flex-1 items-center rounded-[2px] border border-cinnabar/15 bg-[#ecf0e8] px-3 py-4">
+            <svg
+              viewBox="0 0 100 100"
+              preserveAspectRatio="xMidYMid meet"
+              role="img"
+              aria-label={`Day ${activeDay} 行程示意地图`}
+              className="mx-auto h-full w-full max-w-[26rem]"
+            >
+              {routePoints ? (
+                <polyline
+                  points={routePoints}
+                  fill="none"
+                  stroke="#34584e"
+                  strokeWidth="0.8"
+                  strokeDasharray="2 1.4"
+                />
+              ) : null}
+              {dayPlaces.map((place, index) => {
+                const isSelected = selectedItem?.placeId === place.placeId;
+                return (
+                  <g
+                    key={place.placeId}
+                    onClick={() => selectMarker(place.placeId)}
+                    className="cursor-pointer"
+                    role="button"
+                    aria-label={`定位到 ${place.name}`}
                   >
-                    {index + 1}. {place.name.slice(0, 8)}
-                  </text>
-                </g>
-              );
-            })}
-          </svg>
+                    <circle
+                      cx={place.mapX}
+                      cy={place.mapY}
+                      r={isSelected ? 4 : 3}
+                      fill={isSelected ? "#a63a2f" : "#34584e"}
+                      stroke="#faf6ee"
+                      strokeWidth="0.8"
+                    />
+                    <text
+                      x={place.mapX}
+                      y={place.mapY - 5}
+                      textAnchor="middle"
+                      fontSize="3.4"
+                      fill="#2b2e2a"
+                    >
+                      {index + 1}. {place.name.slice(0, 8)}
+                    </text>
+                  </g>
+                );
+              })}
+            </svg>
+          </div>
           {selectedItem?.placeId ? (
             <p className="mt-2 text-sm text-muted">
               已定位：
