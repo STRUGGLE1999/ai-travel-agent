@@ -3,6 +3,7 @@ import { getRepositories } from "@/server/repositories";
 import { getOwnedTrip } from "@/server/page-guards";
 import { AiStatusNotice } from "@/components/status/ai-status-notice";
 import {
+  confirmAllHardConstraintsAction,
   confirmConstraintAction,
   deleteConstraintAction,
   generatePlanAction,
@@ -236,16 +237,29 @@ export default async function ConstraintsPage({
               <span className="text-primary">所有硬约束已确认</span>
             )}
           </p>
-          <form action={generatePlanAction}>
-            <input type="hidden" name="tripId" value={id} />
-            <button
-              type="submit"
-              disabled={pending > 0}
-              className="font-display min-h-11 rounded-[3px] bg-primary px-6 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              确认约束并生成候选计划
-            </button>
-          </form>
+          <div className="flex flex-wrap items-center gap-2">
+            {pending > 0 ? (
+              <form action={confirmAllHardConstraintsAction}>
+                <input type="hidden" name="tripId" value={id} />
+                <button
+                  type="submit"
+                  className="font-display min-h-11 rounded-[3px] border border-primary/40 bg-surface px-5 text-base font-medium tracking-wide text-primary transition-colors hover:bg-primary/10"
+                >
+                  确认全部硬约束
+                </button>
+              </form>
+            ) : null}
+            <form action={generatePlanAction}>
+              <input type="hidden" name="tripId" value={id} />
+              <button
+                type="submit"
+                disabled={pending > 0}
+                className="font-display min-h-11 rounded-[3px] bg-primary px-6 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                确认约束并生成候选计划
+              </button>
+            </form>
+          </div>
         </div>
       </div>
     </section>

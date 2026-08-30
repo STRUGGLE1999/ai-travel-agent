@@ -6,6 +6,7 @@ import { getRepositories } from "@/server/repositories";
 import { getOrCreateSession } from "@/server/session";
 import {
   applyChange,
+  confirmAllHardConstraints,
   confirmConstraintsAndPlan,
   confirmVersion,
   createDemoTrip,
@@ -136,6 +137,15 @@ export async function deleteConstraintAction(
   const constraintId = String(formData.get("constraintId"));
   const ctx = await actor();
   await deleteConstraint(ctx, { tripId, constraintId });
+  revalidatePath(`/trips/${tripId}/constraints`);
+}
+
+export async function confirmAllHardConstraintsAction(
+  formData: FormData,
+): Promise<void> {
+  const tripId = String(formData.get("tripId"));
+  const ctx = await actor();
+  await confirmAllHardConstraints(ctx, tripId);
   revalidatePath(`/trips/${tripId}/constraints`);
 }
 

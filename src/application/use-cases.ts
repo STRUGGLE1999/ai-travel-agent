@@ -245,6 +245,26 @@ export async function updateConstraint(
   });
 }
 
+export async function confirmAllHardConstraints(
+  ctx: ActorContext,
+  tripId: string,
+): Promise<number> {
+  await mustGetTrip(ctx, tripId);
+  const constraints = await ctx.repos.constraints.listByTrip(tripId);
+  const pending = constraints.filter(
+    (item) => item.kind === "HARD" && item.needsConfirmation,
+  );
+  for (const item of pending) {
+    await ctx.repos.constraints.update({
+      ...item,
+      needsConfirmation: false,
+      locked: true,
+      updatedAt: now(),
+    });
+  }
+  return pending.length;
+}
+
 export async function deleteConstraint(
   ctx: ActorContext,
   input: { tripId: string; constraintId: string },
