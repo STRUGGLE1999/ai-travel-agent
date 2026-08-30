@@ -37,7 +37,7 @@ test("hong kong main loop: constraints → conflict → ticket fix → change �
   await confirmAllConstraints(page);
 
   await page
-    .getByRole("button", { name: "确认约束并生成候选计划" })
+    .getByRole("button", { name: /确认约束并生成候选计划/ })
     .click();
 
   // Plan workbench: the round-trip ticket default conflicts with the
@@ -103,7 +103,7 @@ test("mobile 390px: constraints and plan pages have no horizontal overflow", asy
 
   await confirmAllConstraints(page);
   await page
-    .getByRole("button", { name: "确认约束并生成候选计划" })
+    .getByRole("button", { name: /确认约束并生成候选计划/ })
     .click();
   await expect(page).toHaveURL(/\/plan$/);
 

@@ -84,6 +84,39 @@ export function PlanWorkbench({
     .map((place) => `${place.mapX},${place.mapY}`)
     .join(" ");
 
+  // Fit the SVG viewport to the day's places so a handful of points still
+  // fill the frame instead of clustering in a 100x100 corner.
+  const dayPoints = visitedPlaceIds
+    .map((placeId) => places.find((place) => place.placeId === placeId))
+    .filter((place): place is WorkbenchPlace => Boolean(place));
+  const bounds = (() => {
+    if (dayPoints.length === 0) return null;
+    const xs = dayPoints.map((p) => p.mapX);
+    const ys = dayPoints.map((p) => p.mapY);
+    let minX = Math.min(...xs);
+    let maxX = Math.max(...xs);
+    let minY = Math.min(...ys);
+    let maxY = Math.max(...ys);
+    const pad = 8;
+    if (maxX - minX < 14) {
+      minX -= (14 - (maxX - minX)) / 2;
+      maxX += (14 - (maxX - minX)) / 2;
+    }
+    if (maxY - minY < 14) {
+      minY -= (14 - (maxY - minY)) / 2;
+      maxY += (14 - (maxY - minY)) / 2;
+    }
+    return {
+      x: minX - pad,
+      y: minY - pad,
+      w: maxX - minX + pad * 2,
+      h: maxY - minY + pad * 2,
+    };
+  })();
+
+  const labelFor = (name: string) =>
+    name.length > 6 ? `${name.slice(0, 6)}…` : name;
+
   return (
     <div>
       {days.length > 1 ? (
@@ -248,7 +281,11 @@ export function PlanWorkbench({
           </p>
           <div className="flex min-h-0 flex-1 items-center rounded-[2px] border border-cinnabar/15 bg-[#ecf0e8] px-3 py-4">
             <svg
-              viewBox="0 0 100 100"
+              viewBox={
+                bounds
+                  ? `${bounds.x} ${bounds.y} ${bounds.w} ${bounds.h}`
+                  : "0 0 100 100"
+              }
               preserveAspectRatio="xMidYMid meet"
               role="img"
               aria-label={`Day ${activeDay} 行程示意地图`}
@@ -288,7 +325,7 @@ export function PlanWorkbench({
                       fontSize="3.4"
                       fill="#2b2e2a"
                     >
-                      {index + 1}. {place.name.slice(0, 8)}
+                      {index + 1}. {labelFor(place.name)}
                     </text>
                   </g>
                 );

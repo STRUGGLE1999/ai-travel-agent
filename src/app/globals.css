@@ -29,6 +29,7 @@
   --color-surface-muted: var(--surface-muted);
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--surface);
   --color-info: var(--info);
   --color-info-wash: var(--info-wash);
   --color-warning: var(--warning);

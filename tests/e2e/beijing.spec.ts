@@ -41,7 +41,7 @@ test("beijing: injected instructions ignored, flight change only touches day 5",
 
   await confirmAllConstraints(page);
   await page
-    .getByRole("button", { name: "确认约束并生成候选计划" })
+    .getByRole("button", { name: /确认约束并生成候选计划/ })
     .click();
   await expect(page).toHaveURL(/\/plan$/);
 

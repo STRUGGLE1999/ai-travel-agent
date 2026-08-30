@@ -231,10 +231,10 @@ export default async function ConstraintsPage({
           <p className="text-base">
             {pending > 0 ? (
               <span className="text-warning-foreground">
-                仍有 {pending} 项硬约束待确认
+                还有 {pending} 项硬约束待确认 · 确认后即可生成计划
               </span>
             ) : (
-              <span className="text-primary">所有硬约束已确认</span>
+              <span className="text-primary">所有硬约束已确认，可生成计划</span>
             )}
           </p>
           <div className="flex flex-wrap items-center gap-2">
@@ -243,7 +243,7 @@ export default async function ConstraintsPage({
                 <input type="hidden" name="tripId" value={id} />
                 <button
                   type="submit"
-                  className="font-display min-h-11 rounded-[3px] border border-primary/40 bg-surface px-5 text-base font-medium tracking-wide text-primary transition-colors hover:bg-primary/10"
+                  className="font-display min-h-11 rounded-[3px] bg-primary px-5 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90"
                 >
                   确认全部硬约束
                 </button>
@@ -254,8 +254,9 @@ export default async function ConstraintsPage({
               <button
                 type="submit"
                 disabled={pending > 0}
-                className="font-display min-h-11 rounded-[3px] bg-primary px-6 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
+                className="font-display min-h-11 rounded-[3px] bg-secondary px-6 text-base font-medium tracking-wide text-foreground transition-colors hover:bg-surface-muted disabled:cursor-not-allowed disabled:opacity-50"
               >
+                <span className="text-muted">下一步 · </span>
                 确认约束并生成候选计划
               </button>
             </form>

@@ -231,8 +231,6 @@ export default async function PlanPage({
         </div>
       ) : null}
 
-      <PlanWorkbench items={workbenchItems} places={places} />
-
       {previewRecord && previewRequest ? (
         <div className="rounded-[3px] border border-info/40 bg-info-wash p-4">
           <h2 className="font-display text-lg font-medium tracking-wide text-info">变更影响预览</h2>
@@ -395,6 +393,8 @@ export default async function PlanPage({
           </button>
         </form>
       </div>
+
+      <PlanWorkbench items={workbenchItems} places={places} />
     </section>
   );
 }
