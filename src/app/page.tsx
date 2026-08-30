@@ -15,22 +15,24 @@ export default function HomePage() {
         persistenceLabel={runtime.persistenceLabel}
         demoReason={runtime.demoReason}
       />
-      <main className="mx-auto max-w-3xl px-4 py-12 sm:py-16">
-        <p className="text-sm font-medium tracking-wide text-primary">
-          风来成行
+      <main className="mx-auto max-w-2xl px-5 py-16 sm:py-24">
+        <p className="font-display text-sm tracking-[0.4em] text-primary">
+          风来成行 · 旅行搭子
         </p>
-        <h1 className="mt-3 text-4xl font-semibold leading-tight tracking-tight">
+        <h1 className="font-display mt-5 text-4xl font-semibold leading-[1.35] tracking-wide sm:text-5xl">
           懂变化的 AI 旅行搭子。
         </h1>
-        <p className="mt-4 max-w-xl text-lg text-muted">
-          锁定航班、口岸、同行人和体力等约束，检查时间与票种冲突，追踪来源，并在修改前说明影响。
+        <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted">
+          把航班、口岸、同行人、体力都先安放在案，再动身。
+          冲突会被指出，来源可以追查，改动的每一步，都先让你过目。
         </p>
-        <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+
+        <div className="mt-10 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
           <form action={startDemoTripAction}>
             <input type="hidden" name="fixtureId" value="hong-kong" />
             <button
               type="submit"
-              className="inline-flex min-h-11 w-full items-center justify-center rounded-lg bg-primary px-5 text-base font-medium text-primary-foreground sm:w-auto"
+              className="font-display inline-flex min-h-11 w-full items-center justify-center rounded-[3px] bg-primary px-6 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90 sm:w-auto"
             >
               体验香港老人一日游
             </button>
@@ -39,34 +41,41 @@ export default function HomePage() {
             <input type="hidden" name="fixtureId" value="beijing" />
             <button
               type="submit"
-              className="inline-flex min-h-11 w-full items-center justify-center rounded-lg border border-border bg-surface px-5 text-base font-medium sm:w-auto"
+              className="font-display inline-flex min-h-11 w-full items-center justify-center rounded-[3px] border border-border bg-surface px-6 text-base font-medium tracking-wide transition-colors hover:bg-surface-muted sm:w-auto"
             >
               体验北京预约旅行
             </button>
           </form>
           <Link
             href="/trips/new"
-            className="inline-flex min-h-11 items-center justify-center rounded-lg px-5 text-base font-medium text-primary hover:bg-surface-muted"
+            className="font-display inline-flex min-h-11 items-center justify-center rounded-[3px] px-5 text-base font-medium tracking-wide text-muted transition-colors hover:text-primary"
           >
             新建行程
           </Link>
         </div>
-        <ul className="mt-10 grid gap-4 sm:grid-cols-2">
-          {[
-            ["锁定约束", "先确认硬条件，再生成候选计划。"],
-            ["发现冲突", "票种、缓冲和动线问题会明确阻断。"],
-            ["来源可追溯", "演示数据标 MOCK，未知就标未知。"],
-            ["变更可解释", "先看 Diff，确认后才生成新版本。"],
-          ].map(([title, body]) => (
-            <li
-              key={title}
-              className="rounded-xl border border-border bg-surface p-4"
-            >
-              <h2 className="text-base font-semibold">{title}</h2>
-              <p className="mt-1 text-base text-muted">{body}</p>
-            </li>
-          ))}
-        </ul>
+
+        <div className="mt-16 border-l-2 border-primary/30 pl-5">
+          <p className="font-display text-lg leading-relaxed text-muted">
+            先确认，再成行。路要一步步走，事要一件件定。
+            <br />
+            这里没有语焉不详的攻略，只有每一个决定。
+          </p>
+          <ul className="mt-6 grid gap-6 sm:grid-cols-2">
+            {[
+              ["先锁定约束", "先确认硬条件，再生成候选计划。"],
+              ["指出冲突", "票种、缓冲和动线问题会明确阻断。"],
+              ["来源可追查", "演示数据标 MOCK，未知就标未知。"],
+              ["改动可解释", "先看 Diff，确认后才生成新版本。"],
+            ].map(([title, body]) => (
+              <li key={title} className="leading-relaxed">
+                <span className="font-display text-base font-semibold text-foreground">
+                  {title}
+                </span>
+                <p className="mt-1 text-base text-muted">{body}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
       </main>
     </div>
   );

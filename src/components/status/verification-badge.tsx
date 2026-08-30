@@ -8,27 +8,27 @@ const STATUS_COPY: Record<
   VERIFIED: {
     icon: "✓",
     label: "已核验",
-    className: "border-primary/30 bg-primary/10 text-primary",
+    className: "bg-primary/10 text-primary border-primary/30",
   },
   STALE: {
     icon: "⏱",
     label: "可能过期",
-    className: "border-warning/40 bg-warning/10 text-warning-foreground",
+    className: "bg-warning/10 text-warning-foreground border-warning/40",
   },
   UNKNOWN: {
     icon: "?",
     label: "无法确认",
-    className: "border-dashed border-muted text-muted",
+    className: "border-dashed border-muted/60 text-muted bg-transparent",
   },
   MOCK: {
     icon: "◇",
     label: "演示数据",
-    className: "border-warning/40 bg-warning/10 text-warning-foreground",
+    className: "bg-warning/10 text-warning-foreground border-warning/40",
   },
   NOT_REQUIRED: {
     icon: "–",
     label: "无需核验",
-    className: "border-border bg-surface-muted text-muted",
+    className: "bg-surface-muted text-muted border-border",
   },
 };
 
@@ -37,7 +37,7 @@ export function VerificationBadge({ status }: { status: VerificationStatus }) {
   return (
     <span
       className={cn(
-        "inline-flex min-h-8 items-center gap-1 rounded-full border px-2.5 text-sm",
+        "inline-flex min-h-8 items-center gap-1.5 rounded-[2px] border px-2.5 text-sm tracking-wide",
         copy.className,
       )}
     >

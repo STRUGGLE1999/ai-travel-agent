@@ -6,9 +6,9 @@ const SEVERITY_COPY: Record<
   { icon: string; label: string; className: string }
 > = {
   BLOCKING: {
-    icon: "⛔",
+    icon: "×",
     label: "阻断",
-    className: "border-danger/40 bg-danger/10 text-danger",
+    className: "border-cinnabar/40 bg-cinnabar-wash text-cinnabar",
   },
   HIGH: {
     icon: "!",
@@ -18,7 +18,7 @@ const SEVERITY_COPY: Record<
   MEDIUM: {
     icon: "!",
     label: "建议调整",
-    className: "border-info/30 bg-[#e8f1fb] text-info",
+    className: "border-info/30 bg-info-wash text-info",
   },
   LOW: {
     icon: "i",
@@ -43,7 +43,7 @@ export function ConflictBanner({
     <div
       role="alert"
       className={cn(
-        "rounded-xl border p-4",
+        "rounded-md border-l-4 p-4",
         copy.className,
       )}
     >

@@ -19,7 +19,7 @@ export function TripNav({ tripId }: { tripId: string }) {
       aria-label="行程导航"
       className="border-b border-border bg-surface md:border-b-0 md:border-r"
     >
-      <ul className="flex md:flex-col">
+      <ul className="flex md:flex-col md:gap-1.5 md:px-3 md:py-5">
         {LINKS.map((link) => {
           const href = `/trips/${tripId}/${link.href}`;
           const active = pathname === href;
@@ -28,9 +28,9 @@ export function TripNav({ tripId }: { tripId: string }) {
               <Link
                 href={href}
                 className={cn(
-                  "flex min-h-11 items-center justify-center px-3 text-base md:justify-start md:px-4 md:py-3",
+                  "flex min-h-11 items-center justify-center px-3 text-base md:justify-start md:px-4 md:py-2.5 md:text-[15px]",
                   active
-                    ? "bg-primary/10 font-medium text-primary"
+                    ? "border-l-2 border-cinnabar bg-surface-muted/60 font-medium text-primary"
                     : "text-muted hover:bg-surface-muted hover:text-foreground",
                 )}
               >

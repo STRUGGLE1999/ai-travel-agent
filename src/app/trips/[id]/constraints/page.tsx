@@ -15,9 +15,18 @@ export const dynamic = "force-dynamic";
 
 const KIND_LABEL: Record<ConstraintKind, { label: string; className: string }> =
   {
-    HARD: { label: "硬约束", className: "bg-primary text-primary-foreground" },
-    SOFT: { label: "软偏好", className: "bg-surface-muted text-foreground" },
-    NEGATIVE: { label: "不要", className: "bg-danger/10 text-danger" },
+    HARD: {
+      label: "硬约束",
+      className: "bg-primary text-primary-foreground",
+    },
+    SOFT: {
+      label: "软偏好",
+      className: "bg-surface-muted text-foreground",
+    },
+    NEGATIVE: {
+      label: "不要",
+      className: "bg-cinnabar/10 text-cinnabar",
+    },
     UNKNOWN: {
       label: "待确认",
       className: "border border-dashed border-muted text-muted",
@@ -70,7 +79,9 @@ export default async function ConstraintsPage({
 
   return (
     <section className="pb-28">
-      <h1 className="text-2xl font-semibold">约束确认</h1>
+      <h1 className="font-display text-2xl font-semibold tracking-wide">
+        约束确认
+      </h1>
       <p className="mt-2 max-w-2xl text-base text-muted">
         先确认这些条件，避免生成看起来合理但无法执行的行程。
       </p>
@@ -78,7 +89,7 @@ export default async function ConstraintsPage({
       {error ? (
         <p
           role="alert"
-          className="mt-4 rounded-lg border border-danger/40 bg-danger/10 px-4 py-3 text-base text-danger"
+          className="mt-4 rounded-md border border-danger/40 bg-danger/10 px-4 py-3 text-base text-danger"
         >
           {error}
         </p>
@@ -87,9 +98,9 @@ export default async function ConstraintsPage({
       <AiStatusNotice ai={ai} aireason={aireason} />
 
       {ignoredBlocks.length > 0 ? (
-        <div className="mt-4 rounded-xl border border-warning/40 bg-warning/10 p-4">
+        <div className="mt-4 rounded-md border border-warning/40 bg-warning/10 p-4">
           <p className="text-base font-medium text-warning-foreground">
-            ⚠ 已忽略 {ignoredBlocks.length} 段导入文本中的指令内容
+            已忽略 {ignoredBlocks.length} 段导入文本中的指令内容
           </p>
           <ul className="mt-2 space-y-1">
             {ignoredBlocks.map((block, index) => (
@@ -107,10 +118,10 @@ export default async function ConstraintsPage({
         </div>
       ) : null}
 
-      <div className="mt-6 space-y-6">
+      <div className="mt-8 space-y-8">
         {[...grouped.entries()].map(([category, items]) => (
           <div key={category}>
-            <h2 className="mb-2 text-lg font-medium">
+            <h2 className="font-display mb-3 text-lg font-medium tracking-wide">
               {CATEGORY_LABEL[category] ?? category}
             </h2>
             <ul className="space-y-3">
@@ -118,29 +129,28 @@ export default async function ConstraintsPage({
                 <li
                   key={constraint.id}
                   className={cn(
-                    "rounded-xl border bg-surface p-4",
+                    "rounded-[3px] border bg-surface p-4",
                     constraint.needsConfirmation
-                      ? "border-warning/50"
+                      ? "border-warning/60 border-l-4 border-l-warning/60"
                       : "border-border",
                   )}
                 >
                   <div className="flex flex-wrap items-center gap-2">
                     <span
                       className={cn(
-                        "rounded-full px-2.5 py-0.5 text-sm",
+                        "font-display rounded-[2px] px-2.5 py-0.5 text-sm tracking-wide",
                         KIND_LABEL[constraint.kind].className,
                       )}
                     >
-                      {constraint.kind === "HARD" ? "🔒 " : ""}
                       {KIND_LABEL[constraint.kind].label}
                     </span>
                     {constraint.locked ? (
-                      <span className="rounded-full bg-primary/10 px-2.5 py-0.5 text-sm text-primary">
+                      <span className="rounded-[2px] bg-primary/10 px-2.5 py-0.5 text-sm text-primary">
                         已锁定
                       </span>
                     ) : null}
                     {constraint.needsConfirmation ? (
-                      <span className="rounded-full bg-warning/10 px-2.5 py-0.5 text-sm text-warning-foreground">
+                      <span className="rounded-[2px] bg-warning/10 px-2.5 py-0.5 text-sm text-warning-foreground">
                         待确认
                       </span>
                     ) : null}
@@ -162,7 +172,7 @@ export default async function ConstraintsPage({
                         />
                         <button
                           type="submit"
-                          className="min-h-11 rounded-lg bg-primary px-4 text-base font-medium text-primary-foreground"
+                          className="font-display min-h-11 rounded-[3px] bg-primary px-4 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90"
                         >
                           确认并锁定
                         </button>
@@ -182,7 +192,7 @@ export default async function ConstraintsPage({
                         />
                         <button
                           type="submit"
-                          className="min-h-11 rounded-lg border border-border bg-surface px-4 text-base"
+                          className="font-display min-h-11 rounded-[3px] border border-border bg-surface px-4 text-base tracking-wide transition-colors hover:bg-surface-muted"
                         >
                           {constraint.locked ? "解锁" : "锁定"}
                         </button>
@@ -197,7 +207,7 @@ export default async function ConstraintsPage({
                       />
                       <button
                         type="submit"
-                        className="min-h-11 rounded-lg px-4 text-base text-danger hover:bg-danger/10"
+                        className="font-display min-h-11 rounded-[3px] px-4 text-base tracking-wide text-danger transition-colors hover:bg-danger/10"
                       >
                         删除
                       </button>
@@ -209,7 +219,7 @@ export default async function ConstraintsPage({
           </div>
         ))}
         {constraints.length === 0 ? (
-          <p className="rounded-xl border border-border bg-surface p-6 text-base text-muted">
+          <p className="rounded-md border border-border bg-surface p-6 text-base text-muted">
             尚未提取到约束。请从「新建行程」导入文本，或选择演示场景。
           </p>
         ) : null}
@@ -231,7 +241,7 @@ export default async function ConstraintsPage({
             <button
               type="submit"
               disabled={pending > 0}
-              className="min-h-11 rounded-lg bg-primary px-5 text-base font-medium text-primary-foreground disabled:cursor-not-allowed disabled:opacity-50"
+              className="font-display min-h-11 rounded-[3px] bg-primary px-6 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               确认约束并生成候选计划
             </button>

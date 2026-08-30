@@ -1,21 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f7f3ec;
-  --foreground: #1f2a28;
-  --surface: #fffdf8;
-  --surface-muted: #efe8dc;
-  --primary: #145c54;
-  --primary-foreground: #f7f3ec;
-  --info: #1d4e89;
-  --warning: #c47b17;
-  --warning-foreground: #3f2a0a;
-  --danger: #9b1d2a;
-  --danger-foreground: #fff7f6;
-  --muted: #5c6563;
-  --border: #d9d0c3;
-  --ring: #145c54;
-  --radius: 0.75rem;
+  --background: #f6f1e7; /* 宣纸底 */
+  --foreground: #2b2e2a; /* 墨 */
+  --surface: #faf6ee; /* 纸面卡片 */
+  --surface-muted: #efe8db; /* 淡染 */
+  --primary: #34584e; /* 黛青 */
+  --primary-foreground: #f6f1e7;
+  --info: #46688a; /* 黛蓝 */
+  --info-wash: #e4ebf2;
+  --warning: #8f6a2c; /* 琥珀 */
+  --warning-foreground: #3f2f13;
+  --danger: #a63a2f; /* 朱砂 */
+  --danger-foreground: #f7f0ea;
+  --cinnabar: #a63a2f; /* 印章/阻断 */
+  --cinnabar-wash: #f2e3df;
+  --cloud: #46688a; /* 信息 */
+  --muted: #5c615a; /* 淡墨 */
+  --border: #ddd5c6; /* 极细线 */
+  --ring: #34584e;
+  --radius: 0.375rem;
 }
 
 @theme inline {
@@ -26,15 +30,21 @@
   --color-primary: var(--primary);
   --color-primary-foreground: var(--primary-foreground);
   --color-info: var(--info);
+  --color-info-wash: var(--info-wash);
   --color-warning: var(--warning);
   --color-warning-foreground: var(--warning-foreground);
   --color-danger: var(--danger);
   --color-danger-foreground: var(--danger-foreground);
+  --color-cinnabar: var(--cinnabar);
+  --color-cinnabar-wash: var(--cinnabar-wash);
+  --color-cloud: var(--cloud);
   --color-muted: var(--muted);
   --color-border: var(--border);
   --color-ring: var(--ring);
   --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
     "Noto Sans SC", system-ui, sans-serif;
+  --font-display: "Songti SC", "Noto Serif SC", "Source Han Serif SC",
+    STSong, "SimSun", serif;
   --radius-lg: var(--radius);
 }
 
@@ -44,7 +54,15 @@
 
 html,
 body {
-  background: var(--background);
+  background-color: var(--background);
+  /* 极淡的绢/纸纹理，几乎不可见，只作质感 */
+  background-image: repeating-linear-gradient(
+    0deg,
+    rgba(43, 46, 42, 0.012),
+    rgba(43, 46, 42, 0.012) 1px,
+    transparent 1px,
+    transparent 3px
+  );
   color: var(--foreground);
   font-size: 16px;
 }
@@ -52,7 +70,13 @@ body {
 body {
   min-height: 100%;
   font-family: var(--font-sans);
-  line-height: 1.6;
+  line-height: 1.7;
+}
+
+/* 古风标题字体 */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: 0.04em;
 }
 
 :focus-visible {

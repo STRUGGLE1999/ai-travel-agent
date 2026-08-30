@@ -42,9 +42,9 @@ export default async function TripLayout({
             : "行程不存在"
         }
       />
-      <div className="mx-auto grid min-h-[calc(100vh-5.5rem)] max-w-6xl md:grid-cols-[12rem_1fr]">
+      <div className="mx-auto grid min-h-[calc(100vh-5.5rem)] max-w-6xl md:grid-cols-[11rem_1fr]">
         <TripNav tripId={id} />
-        <div className="min-w-0 px-4 py-6">{children}</div>
+        <div className="min-w-0 px-5 py-8 md:px-8">{children}</div>
       </div>
     </div>
   );

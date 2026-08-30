@@ -37,13 +37,13 @@ export default async function ChecklistPage({
 
   return (
     <section>
-      <h1 className="text-2xl font-semibold">预约与预订清单</h1>
+      <h1 className="font-display text-2xl font-semibold tracking-wide">预约与预订清单</h1>
       <p className="mt-2 max-w-2xl text-base text-muted">
         任务保留使用日期、票种、人数和来源状态。本产品不执行支付，预订完成后请手动标记。
       </p>
 
       {sorted.length === 0 ? (
-        <p className="mt-6 rounded-xl border border-border bg-surface p-6 text-base text-muted">
+        <p className="mt-6 rounded-[3px] border border-border bg-surface p-6 text-base text-muted">
           生成候选计划后，这里会列出需要预约或购票的任务。
         </p>
       ) : (
@@ -51,12 +51,12 @@ export default async function ChecklistPage({
           {sorted.map((task) => (
             <li
               key={task.id}
-              className="rounded-xl border border-border bg-surface p-4"
+              className="rounded-[3px] border border-border bg-surface p-4"
             >
               <div className="flex flex-wrap items-center gap-2">
                 <span
                   className={cn(
-                    "rounded-full px-2.5 py-0.5 text-sm",
+                    "rounded-[2px] px-2.5 py-0.5 text-sm",
                     task.status === "BOOKED"
                       ? "bg-primary/10 text-primary"
                       : task.status === "CANCELLED"
@@ -68,7 +68,7 @@ export default async function ChecklistPage({
                 </span>
                 <VerificationBadge status="MOCK" />
               </div>
-              <p className="mt-2 text-base font-medium">{task.title}</p>
+              <p className="font-display mt-2 text-base font-medium tracking-wide">{task.title}</p>
               <dl className="mt-2 grid gap-x-6 gap-y-1 text-sm text-muted sm:grid-cols-2">
                 <div className="flex gap-2">
                   <dt>使用日期</dt>
@@ -123,7 +123,7 @@ export default async function ChecklistPage({
                       <input type="hidden" name="status" value={status} />
                       <button
                         type="submit"
-                        className="min-h-11 rounded-lg border border-border bg-surface px-4 text-base hover:bg-surface-muted"
+                        className="font-display min-h-11 rounded-[3px] border border-border bg-surface px-4 text-base tracking-wide transition-colors hover:bg-surface-muted"
                       >
                         标记为{STATUS_LABEL[status]}
                       </button>

@@ -47,13 +47,13 @@ export default async function PlanPage({
   if (!latest || !fixture) {
     return (
       <section>
-        <h1 className="text-2xl font-semibold">行程工作台</h1>
+        <h1 className="font-display text-2xl font-semibold tracking-wide">行程工作台</h1>
         <p className="mt-3 max-w-2xl text-base text-muted">
           还没有候选计划。请先在约束页确认硬约束，然后生成候选计划。
         </p>
         <Link
           href={`/trips/${id}/constraints`}
-          className="mt-4 inline-flex min-h-11 items-center rounded-lg bg-primary px-5 text-base font-medium text-primary-foreground"
+          className="font-display mt-4 inline-flex min-h-11 items-center rounded-[3px] bg-primary px-5 text-base font-medium tracking-wide text-primary-foreground"
         >
           前往约束确认
         </Link>
@@ -126,7 +126,7 @@ export default async function PlanPage({
     <section className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-semibold">行程工作台</h1>
+          <h1 className="font-display text-2xl font-semibold tracking-wide">行程工作台</h1>
           <p className="mt-1 text-base text-muted">
             版本 v{latest.versionNumber} ·{" "}
             {latest.confirmedAt ? "已确认（不可修改）" : "候选（可调整）"} ·
@@ -139,7 +139,7 @@ export default async function PlanPage({
             <input type="hidden" name="planVersionId" value={latest.id} />
             <button
               type="submit"
-              className="min-h-11 rounded-lg border border-primary px-4 text-base font-medium text-primary hover:bg-primary/10"
+              className="font-display min-h-11 rounded-[3px] border border-primary px-4 text-base font-medium tracking-wide text-primary transition-colors hover:bg-primary/10"
             >
               确认此版本
             </button>
@@ -150,7 +150,7 @@ export default async function PlanPage({
       {error ? (
         <p
           role="alert"
-          className="rounded-lg border border-danger/40 bg-danger/10 px-4 py-3 text-base text-danger"
+          className="rounded-md border border-danger/40 bg-danger/10 px-4 py-3 text-base text-danger"
         >
           {error}
         </p>
@@ -171,14 +171,14 @@ export default async function PlanPage({
           ))}
         </div>
       ) : (
-        <p className="rounded-xl border border-primary/30 bg-primary/5 px-4 py-3 text-base text-primary">
-          ✓ 当前版本没有未解决的冲突。
+        <p className="rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-base text-primary">
+          当前版本没有未解决的冲突。
         </p>
       )}
 
       {fixture.tickets.length > 0 ? (
-        <div className="rounded-xl border border-border bg-surface p-4">
-          <h2 className="text-lg font-medium">决策卡：山顶缆车票种比较</h2>
+        <div className="rounded-[3px] border border-border bg-surface p-4">
+          <h2 className="font-display text-lg font-medium tracking-wide">决策卡：山顶缆车票种比较</h2>
           <p className="mt-1 text-sm text-muted">
             价格为演示数据，不代表实时票价。当前计划的下山方式是「出租车」，
             请选择与之匹配的票种。
@@ -189,7 +189,7 @@ export default async function PlanPage({
                 key={ticket.id}
                 action={selectTicketAction}
                 className={cn(
-                  "flex flex-col rounded-xl border p-3",
+                  "flex flex-col rounded-[3px] border p-3",
                   selectedTicketId === ticket.id
                     ? "border-primary bg-primary/5"
                     : "border-border",
@@ -198,7 +198,7 @@ export default async function PlanPage({
                 <input type="hidden" name="tripId" value={id} />
                 <input type="hidden" name="planVersionId" value={latest.id} />
                 <input type="hidden" name="ticketId" value={ticket.id} />
-                <p className="text-base font-medium">{ticket.name}</p>
+                <p className="font-display text-base font-medium tracking-wide">{ticket.name}</p>
                 <p className="mt-1 flex items-center gap-2 text-base">
                   <VerificationBadge status="MOCK" />
                   <span>
@@ -217,7 +217,7 @@ export default async function PlanPage({
                   type="submit"
                   disabled={Boolean(latest.confirmedAt)}
                   className={cn(
-                    "mt-3 min-h-11 rounded-lg px-3 text-base font-medium disabled:cursor-not-allowed disabled:opacity-50",
+                    "font-display mt-3 min-h-11 rounded-[3px] px-3 text-base font-medium tracking-wide disabled:cursor-not-allowed disabled:opacity-50",
                     selectedTicketId === ticket.id
                       ? "bg-primary text-primary-foreground"
                       : "border border-border bg-surface",
@@ -234,8 +234,8 @@ export default async function PlanPage({
       <PlanWorkbench items={workbenchItems} places={places} />
 
       {previewRecord && previewRequest ? (
-        <div className="rounded-xl border border-info/40 bg-[#f2f7fd] p-4">
-          <h2 className="text-lg font-medium text-info">变更影响预览</h2>
+        <div className="rounded-[3px] border border-info/40 bg-info-wash p-4">
+          <h2 className="font-display text-lg font-medium tracking-wide text-info">变更影响预览</h2>
           <p className="mt-1 text-base">
             变更请求：“{previewRequest.rawText}”
           </p>
@@ -247,7 +247,7 @@ export default async function PlanPage({
               {previewRecord.impact.additions.length > 0 ? (
                 <div>
                   <h3 className="text-base font-medium text-primary">
-                    ＋ 新增 {previewRecord.impact.additions.length} 项
+                    新增 {previewRecord.impact.additions.length} 项
                   </h3>
                   <ul className="mt-1 space-y-1 text-base">
                     {previewRecord.impact.additions.map((item) => (
@@ -261,7 +261,7 @@ export default async function PlanPage({
               {previewRecord.impact.removals.length > 0 ? (
                 <div>
                   <h3 className="text-base font-medium text-danger">
-                    － 删除 {previewRecord.impact.removals.length} 项
+                    删除 {previewRecord.impact.removals.length} 项
                   </h3>
                   <ul className="mt-1 space-y-1 text-base">
                     {previewRecord.impact.removals.map((itemId) => (
@@ -273,7 +273,7 @@ export default async function PlanPage({
               {previewRecord.impact.updates.length > 0 ? (
                 <div>
                   <h3 className="text-base font-medium text-info">
-                    ✎ 修改 {previewRecord.impact.updates.length} 项
+                    修改 {previewRecord.impact.updates.length} 项
                   </h3>
                   <ul className="mt-1 space-y-1 text-base">
                     {previewRecord.impact.updates.map((update) => (
@@ -293,7 +293,7 @@ export default async function PlanPage({
               {previewRecord.impact.moves.length > 0 ? (
                 <div>
                   <h3 className="text-base font-medium">
-                    ⇄ 顺延 {previewRecord.impact.moves.length} 项
+                    顺延 {previewRecord.impact.moves.length} 项
                   </h3>
                   <ul className="mt-1 space-y-1 text-base">
                     {previewRecord.impact.moves.map((move) => (
@@ -307,7 +307,7 @@ export default async function PlanPage({
             </div>
             <div className="space-y-2">
               <div>
-                <h3 className="text-base font-medium">🔒 保留的锁定决定</h3>
+                <h3 className="text-base font-medium">保留的锁定决定</h3>
                 <ul className="mt-1 space-y-1 text-base text-muted">
                   {previewRecord.impact.preservedLockedItemIds.map((itemId) => (
                     <li key={itemId}>{itemTitle(itemId)}</li>
@@ -317,7 +317,7 @@ export default async function PlanPage({
               {previewRecord.impact.newConflicts.length > 0 ? (
                 <div>
                   <h3 className="text-base font-medium text-danger">
-                    ⚠ 新出现的冲突
+                   新出现的冲突
                   </h3>
                   <ul className="mt-1 space-y-1 text-base">
                     {previewRecord.impact.newConflicts.map((conflict) => (
@@ -330,7 +330,7 @@ export default async function PlanPage({
               ) : null}
               {previewRecord.impact.resolvedConflictIds.length > 0 ? (
                 <p className="text-base text-primary">
-                  ✓ 将解决 {previewRecord.impact.resolvedConflictIds.length}{" "}
+                  将解决 {previewRecord.impact.resolvedConflictIds.length}{" "}
                   个现有冲突
                 </p>
               ) : null}
@@ -356,14 +356,14 @@ export default async function PlanPage({
               />
               <button
                 type="submit"
-                className="min-h-11 rounded-lg bg-primary px-5 text-base font-medium text-primary-foreground"
+                className="font-display min-h-11 rounded-[3px] bg-primary px-5 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 确认并创建新版本
               </button>
             </form>
             <Link
               href={`/trips/${id}/plan`}
-              className="inline-flex min-h-11 items-center rounded-lg border border-border bg-surface px-5 text-base"
+              className="font-display inline-flex min-h-11 items-center rounded-[3px] border border-border bg-surface px-5 text-base tracking-wide transition-colors hover:bg-surface-muted"
             >
               取消
             </Link>
@@ -371,8 +371,8 @@ export default async function PlanPage({
         </div>
       ) : null}
 
-      <div className="rounded-xl border border-border bg-surface p-4">
-        <h2 className="text-lg font-medium">用自然语言提出变更</h2>
+      <div className="rounded-[3px] border border-border bg-surface p-4">
+        <h2 className="font-display text-lg font-medium tracking-wide">用自然语言提出变更</h2>
         <p className="mt-1 text-sm text-muted">
           例如：“加入香港历史博物馆，如果暴雨就不要去山顶” 或
           “返程航班改成 16:15”。系统会先展示影响，确认后才创建新版本。
@@ -384,12 +384,12 @@ export default async function PlanPage({
             name="changeText"
             required
             maxLength={500}
-            className="min-h-11 flex-1 rounded-lg border border-border bg-background px-3 text-base"
+            className="font-display min-h-11 flex-1 rounded-[3px] border border-border bg-background px-3 text-base"
             placeholder="输入变更请求…"
           />
           <button
             type="submit"
-            className="min-h-11 rounded-lg bg-primary px-5 text-base font-medium text-primary-foreground"
+            className="font-display min-h-11 rounded-[3px] bg-primary px-5 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90"
           >
             预览影响
           </button>
