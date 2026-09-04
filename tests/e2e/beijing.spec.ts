@@ -12,10 +12,10 @@ async function selectDay(page: Page, day: number): Promise<void> {
 }
 
 async function confirmAllConstraints(page: Page): Promise<void> {
-  // Click "确认并锁定" one at a time, waiting for each server action
+  // Click "确认并锁定" / "确认并锁定为底线" one at a time, waiting for each server action
   // to re-render before the next click.
   for (let i = 0; i < 12; i += 1) {
-    const buttons = page.getByRole("button", { name: "确认并锁定" });
+    const buttons = page.getByRole("button", { name: /确认并锁定/ });
     const count = await buttons.count();
     if (count === 0) {
       break;
@@ -23,7 +23,7 @@ async function confirmAllConstraints(page: Page): Promise<void> {
     await buttons.first().click();
     await expect(buttons).toHaveCount(count - 1, { timeout: 15000 });
   }
-  await expect(page.getByText("所有硬约束已确认")).toBeVisible();
+  await expect(page.getByText(/所有(硬约束已确认|固定底线已把关)/)).toBeVisible();
 }
 
 test("beijing: injected instructions ignored, flight change only touches day 5", async ({
@@ -41,7 +41,7 @@ test("beijing: injected instructions ignored, flight change only touches day 5",
 
   await confirmAllConstraints(page);
   await page
-    .getByRole("button", { name: /确认约束并生成候选计划/ })
+    .getByRole("button", { name: /(确认约束并生成候选计划|确认底线，生成可行行程方案)/ })
     .click();
   await expect(page).toHaveURL(/\/plan$/);
 
@@ -55,12 +55,12 @@ test("beijing: injected instructions ignored, flight change only touches day 5",
   await expect(page.getByText("08:30–12:30")).toBeVisible();
 
   // Change the return flight to 16:15.
-  await page.getByPlaceholder("输入变更请求…").fill("返程航班改成16:15");
+  await page.getByPlaceholder(/输入变更请求/).fill("返程航班改成16:15");
   await page.getByRole("button", { name: "预览影响" }).click();
   await expect(page.getByText("变更影响预览")).toBeVisible();
   await expect(page.getByText(/修改 \d+ 项/)).toBeVisible();
   await page.getByRole("button", { name: "确认并创建新版本" }).click();
-  await expect(page.getByText(/版本 v2/)).toBeVisible();
+  await expect(page.getByText(/(版本|方案) v2/)).toBeVisible();
 
   // Day 5 recomputed: flight 16:15, taxi 13:20-14:15, luggage 12:50.
   await selectDay(page, 5);
@@ -83,5 +83,5 @@ test("beijing: injected instructions ignored, flight change only touches day 5",
   ]) {
     await expect(page.getByText(name)).toBeVisible();
   }
-  await expect(page.getByText("演示数据").first()).toBeVisible();
+  await expect(page.getByText(/(演示数据|基准参考)/).first()).toBeVisible();
 });

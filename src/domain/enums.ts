@@ -134,6 +134,7 @@ export const CONFLICT_CODES = {
   LOCKED_ITEM_CHANGED: "LOCKED_ITEM_CHANGED",
   UNVERIFIED_AS_READY: "UNVERIFIED_AS_READY",
   BUDGET_EXCEEDED: "BUDGET_EXCEEDED",
+  WEATHER_VIOLATION: "WEATHER_VIOLATION",
 } as const;
 
 export const conflictCodeSchema = z.enum([
@@ -147,5 +148,6 @@ export const conflictCodeSchema = z.enum([
   CONFLICT_CODES.LOCKED_ITEM_CHANGED,
   CONFLICT_CODES.UNVERIFIED_AS_READY,
   CONFLICT_CODES.BUDGET_EXCEEDED,
+  CONFLICT_CODES.WEATHER_VIOLATION,
 ]);
 export type ConflictCode = z.infer<typeof conflictCodeSchema>;

@@ -35,6 +35,12 @@ export const changeOperationSchema = z.discriminatedUnion("type", [
     locationHint: z.string(),
   }),
   z.object({
+    type: z.literal("CHANGE_TRANSIT"),
+    role: z.string().optional(),
+    transportMode: z.enum(["WALK", "TRANSIT", "TAXI", "FERRY", "TRAM"]),
+    title: z.string().optional(),
+  }),
+  z.object({
     type: z.literal("UPDATE_CONSTRAINT"),
     category: constraintCategorySchema,
     summary: z.string(),

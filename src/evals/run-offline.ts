@@ -49,14 +49,14 @@ function hkConstraints(): Constraint[] {
   }));
 }
 
-function hkFeasibility(selectedTicketId: string | null) {
+async function hkFeasibility(selectedTicketId: string | null) {
   const constraints = hkConstraints();
   const items = buildCandidatePlanItems({
     fixture: HONG_KONG_FIXTURE,
     planVersionId: "ver_eval",
     constraints,
   });
-  return runFeasibilityChecks({
+  return await runFeasibilityChecks({
     tripId: "trip_hk",
     planVersionId: "ver_eval",
     fixture: HONG_KONG_FIXTURE,
@@ -148,7 +148,7 @@ export async function runOfflineEval(): Promise<EvalReport> {
     ),
   );
 
-  const blocked = hkFeasibility("tram-return");
+  const blocked = await hkFeasibility("tram-return");
   const mismatch = blocked.conflicts.find(
     (conflict) => conflict.code === "TICKET_PLAN_MISMATCH",
   );
@@ -167,7 +167,7 @@ export async function runOfflineEval(): Promise<EvalReport> {
     ),
   );
 
-  const cleared = hkFeasibility("tram-single");
+  const cleared = await hkFeasibility("tram-single");
   const precisionOk = !cleared.conflicts.some(
     (conflict) => conflict.code === "TICKET_PLAN_MISMATCH",
   );

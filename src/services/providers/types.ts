@@ -15,6 +15,9 @@ export interface RouteInput {
   fromPlaceId: string;
   toPlaceId: string;
   mode: "WALK" | "TRANSIT" | "TAXI" | "FERRY" | "TRAM" | "CAR";
+  fromCoord?: { lat: number; lng: number };
+  toCoord?: { lat: number; lng: number };
+  city?: string;
 }
 
 export interface RouteResult {
@@ -52,6 +55,8 @@ export interface PlaceInfoProvider {
 export interface ForecastInput {
   placeId: string;
   date: string;
+  city?: string;
+  adcode?: string;
 }
 
 export interface ForecastResult {

@@ -109,6 +109,18 @@ describe("rule-based change intent parsing", () => {
     ).toBe(true);
   });
 
+  it("parses descent switch to tram", () => {
+    const intent = ruleBasedChangeIntent("把下山方式改回缆车");
+    expect(
+      intent.operations.some(
+        (op) =>
+          op.type === "CHANGE_TRANSIT" &&
+          op.role === "DESCENT" &&
+          op.transportMode === "TRAM",
+      ),
+    ).toBe(true);
+  });
+
   it("falls back to UPDATE_CONSTRAINT for unparseable text", () => {
     const intent = ruleBasedChangeIntent("这句话没有可执行的意图");
     expect(intent.operations[0].type).toBe("UPDATE_CONSTRAINT");

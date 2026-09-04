@@ -17,6 +17,7 @@ import { runFeasibilityChecks } from "@/domain/rules/feasibility";
 import { computeChange } from "@/domain/change/engine";
 import { sanitizeImportedText } from "@/services/ai/sanitizer";
 import { createGatedAiProvider } from "@/services/ai/gate";
+import { createMapProvider, createWeatherProvider } from "@/services/providers";
 import { getFixture, dateForDay } from "@/fixtures";
 import type { TripFixture } from "@/fixtures";
 import { sha256Hex } from "@/lib/ids";
@@ -364,7 +365,10 @@ export async function verifyVersion(
 
   await ctx.repos.planVersions.update({ ...version, status: "VERIFYING" });
 
-  const { conflicts, evidence } = runFeasibilityChecks({
+  const mapProvider = createMapProvider();
+  const weatherProvider = createWeatherProvider();
+
+  const { conflicts, evidence } = await runFeasibilityChecks({
     tripId: trip.id,
     planVersionId,
     fixture,
@@ -372,6 +376,8 @@ export async function verifyVersion(
     items,
     selectedTicketId: ticketId,
     checkedAtIso: now(),
+    mapProvider,
+    weatherProvider,
   });
 
   await ctx.repos.conflicts.replaceForVersion(planVersionId, conflicts);
@@ -541,7 +547,10 @@ export async function previewChange(
   });
 
   const previousConflicts = await ctx.repos.conflicts.listByVersion(latest.id);
-  const { conflicts: nextConflicts } = runFeasibilityChecks({
+  const mapProvider = createMapProvider();
+  const weatherProvider = createWeatherProvider();
+
+  const { conflicts: nextConflicts } = await runFeasibilityChecks({
     tripId: trip.id,
     planVersionId: latest.id,
     fixture,
@@ -552,6 +561,8 @@ export async function previewChange(
         ? currentTicketId
         : computation.nextTicketId,
     checkedAtIso: now(),
+    mapProvider,
+    weatherProvider,
   });
 
   const resolvedConflictIds = previousConflicts

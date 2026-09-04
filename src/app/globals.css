@@ -42,15 +42,27 @@
   --color-muted: var(--muted);
   --color-border: var(--border);
   --color-ring: var(--ring);
-  --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei",
-    "Noto Sans SC", system-ui, sans-serif;
-  --font-display: "Songti SC", "Noto Serif SC", "Source Han Serif SC",
-    STSong, "SimSun", serif;
+  --font-sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI",
+    "Microsoft YaHei", "Source Han Sans SC", "Noto Sans SC", "Noto Sans CJK SC",
+    system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue",
+    sans-serif;
+  --font-display: "Songti SC", "Source Han Serif SC", "Source Han Serif CN",
+    "Noto Serif SC", "Noto Serif CJK SC", STSong, "FangSong", "STFangsong",
+    "KaiTi", "STKaiti", serif;
+  --font-numeric: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    "Helvetica Neue", "PingFang SC", "Microsoft YaHei", sans-serif;
   --radius-lg: var(--radius);
 }
 
 * {
   border-color: var(--border);
+}
+
+html {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  text-size-adjust: 100%;
 }
 
 html,
@@ -78,9 +90,54 @@ body {
 .font-display {
   font-family: var(--font-display);
   letter-spacing: 0.04em;
+  text-rendering: optimizeLegibility;
+}
+
+/* 等宽与数据表盘数字 */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
 }
 
 :focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
+
+.print-page-break {
+  page-break-after: always;
+  break-after: page;
+}
+
+.break-inside-avoid {
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  html,
+  body {
+    background-color: #ffffff !important;
+    background-image: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+  @page {
+    size: A4 portrait;
+    margin: 15mm 14mm;
+  }
+  .print-page-break {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+  .break-inside-avoid {
+    break-inside: avoid !important;
+    page-break-inside: avoid !important;
+  }
+}
+

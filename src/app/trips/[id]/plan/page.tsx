@@ -18,6 +18,8 @@ import {
   selectTicketAction,
 } from "@/app/actions";
 import { cn } from "@/lib/cn";
+import { calculateTripBudget } from "@/domain/budget/calculator";
+import { BudgetCard } from "@/components/budget/budget-card";
 
 export const dynamic = "force-dynamic";
 
@@ -49,28 +51,36 @@ export default async function PlanPage({
       <section>
         <h1 className="font-display text-2xl font-semibold tracking-wide">行程工作台</h1>
         <p className="mt-3 max-w-2xl text-base text-muted">
-          还没有候选计划。请先在约束页确认硬约束，然后生成候选计划。
+          暂未生成行程方案。请先完成行前底线把关，AI 搭子将为您规划最顺畅的可行路线。
         </p>
         <Link
           href={`/trips/${id}/constraints`}
-          className="font-display mt-4 inline-flex min-h-11 items-center rounded-[3px] bg-primary px-5 text-base font-medium tracking-wide text-primary-foreground"
+          className="mt-4 inline-flex min-h-11 items-center rounded-[3px] bg-primary px-5 text-base font-medium tracking-wide text-primary-foreground"
         >
-          前往约束确认
+          前往行前底线把关
         </Link>
       </section>
     );
   }
 
-  const [items, conflicts, evidence, tasks] = await Promise.all([
+  const [items, conflicts, evidence, tasks, constraints] = await Promise.all([
     repos.planItems.listByVersion(latest.id),
     repos.conflicts.listByVersion(latest.id),
     repos.evidence.listByVersion(latest.id),
     repos.bookingTasks.listByVersion(latest.id),
+    repos.constraints.listByTrip(id),
   ]);
 
   const activeConflicts = conflicts.filter((conflict) => !conflict.resolved);
   const peakTask = tasks.find((task) => task.title.includes("缆车"));
   const selectedTicketId = peakTask?.ticketType ?? null;
+
+  const budget = calculateTripBudget({
+    items,
+    fixture,
+    selectedTicketId,
+    constraints,
+  });
 
   const workbenchItems: WorkbenchItem[] = items.map((item) => {
     const meta = readItemMeta(item);
@@ -110,6 +120,8 @@ export default async function PlanPage({
     name: place.name,
     mapX: place.mapX,
     mapY: place.mapY,
+    lat: place.lat ?? null,
+    lng: place.lng ?? null,
   }));
 
   const previewRecord = preview
@@ -128,23 +140,30 @@ export default async function PlanPage({
         <div>
           <h1 className="font-display text-2xl font-semibold tracking-wide">行程工作台</h1>
           <p className="mt-1 text-base text-muted">
-            版本 v{latest.versionNumber} ·{" "}
-            {latest.confirmedAt ? "已确认（不可修改）" : "候选（可调整）"} ·
-            状态 {latest.status}
+            方案 v{latest.versionNumber} ·{" "}
+            {latest.confirmedAt ? "已定稿" : "规划中"}
           </p>
         </div>
-        {!latest.confirmedAt ? (
-          <form action={confirmVersionAction}>
-            <input type="hidden" name="tripId" value={id} />
-            <input type="hidden" name="planVersionId" value={latest.id} />
-            <button
-              type="submit"
-              className="font-display min-h-11 rounded-[3px] border border-primary px-4 text-base font-medium tracking-wide text-primary transition-colors hover:bg-primary/10"
-            >
-              确认此版本
-            </button>
-          </form>
-        ) : null}
+        <div className="flex flex-wrap items-center gap-3">
+          <Link
+            href={`/trips/${id}/handout`}
+            className="inline-flex min-h-11 items-center rounded-[3px] border border-border bg-surface px-4 text-base font-medium tracking-wide text-foreground transition-colors hover:bg-surface-muted"
+          >
+            📜 导出手账
+          </Link>
+          {!latest.confirmedAt ? (
+            <form action={confirmVersionAction}>
+              <input type="hidden" name="tripId" value={id} />
+              <input type="hidden" name="planVersionId" value={latest.id} />
+              <button
+                type="submit"
+                className="min-h-11 rounded-[3px] border border-primary px-4 text-base font-medium tracking-wide text-primary transition-colors hover:bg-primary/10"
+              >
+                确认此版本
+              </button>
+            </form>
+          ) : null}
+        </div>
       </div>
 
       {error ? (
@@ -157,6 +176,39 @@ export default async function PlanPage({
       ) : null}
 
       <AiStatusNotice ai={ai} aireason={aireason} />
+
+      {/* Guarded Bottom-lines Bar */}
+      {constraints.length > 0 ? (
+        <div className="flex flex-wrap items-center justify-between gap-2 rounded-[3px] border border-[#c2cdca] bg-[#faf8f4] px-3.5 py-2.5 text-xs text-[#52635e]">
+          <div className="flex flex-wrap items-center gap-1.5">
+            <span className="font-medium text-[#1e2d29]">
+              🔒 已锁定守护底线：
+            </span>
+            {constraints
+              .filter((c) => c.locked)
+              .slice(0, 4)
+              .map((c) => (
+                <span
+                  key={c.id}
+                  className="rounded-[2px] border border-[#d5cfc2] bg-white px-2 py-0.5 text-[#34584e]"
+                >
+                  {c.summary}
+                </span>
+              ))}
+            {constraints.filter((c) => c.locked).length > 4 ? (
+              <span className="text-muted">
+                等共 {constraints.filter((c) => c.locked).length} 项
+              </span>
+            ) : null}
+          </div>
+          <Link
+            href={`/trips/${id}/constraints`}
+            className="font-medium text-[#34584e] transition-colors hover:text-[#1e2d29] hover:underline"
+          >
+            查看/调整底线 →
+          </Link>
+        </div>
+      ) : null}
 
       {activeConflicts.length > 0 ? (
         <div className="space-y-3">
@@ -172,16 +224,16 @@ export default async function PlanPage({
         </div>
       ) : (
         <p className="rounded-md border border-primary/30 bg-primary/5 px-4 py-3 text-base text-primary">
-          当前版本没有未解决的冲突。
+          ✓ 当前动线顺畅，暂无待协调冲突。
         </p>
       )}
 
       {fixture.tickets.length > 0 ? (
         <div className="rounded-[3px] border border-border bg-surface p-4">
-          <h2 className="font-display text-lg font-medium tracking-wide">决策卡：山顶缆车票种比较</h2>
+          <h2 className="font-display text-lg font-medium tracking-wide">💡 动线决策：山顶缆车票种选择</h2>
           <p className="mt-1 text-sm text-muted">
-            价格为演示数据，不代表实时票价。当前计划的下山方式是「出租车」，
-            请选择与之匹配的票种。
+            票价基于基准参考标准。当前规划的下山方式是「出租车」，
+            请选择与之匹配的票种以避免浪费。
           </p>
           <div className="mt-3 grid gap-3 md:grid-cols-3">
             {fixture.tickets.map((ticket) => (
@@ -204,7 +256,7 @@ export default async function PlanPage({
                   <span>
                     {ticket.price !== null
                       ? `${ticket.price} ${ticket.currency}/人`
-                      : "价格未知，不编造"}
+                      : "价格待现场确认"}
                   </span>
                 </p>
                 <ul className="mt-2 flex-1 space-y-1 text-sm text-muted">
@@ -217,7 +269,7 @@ export default async function PlanPage({
                   type="submit"
                   disabled={Boolean(latest.confirmedAt)}
                   className={cn(
-                    "font-display mt-3 min-h-11 rounded-[3px] px-3 text-base font-medium tracking-wide disabled:cursor-not-allowed disabled:opacity-50",
+                    "mt-3 min-h-11 rounded-[3px] px-3 text-base font-medium tracking-wide disabled:cursor-not-allowed disabled:opacity-50",
                     selectedTicketId === ticket.id
                       ? "bg-primary text-primary-foreground"
                       : "border border-border bg-surface",
@@ -230,6 +282,8 @@ export default async function PlanPage({
           </div>
         </div>
       ) : null}
+
+      <BudgetCard budget={budget} />
 
       {previewRecord && previewRequest ? (
         <div className="rounded-[3px] border border-info/40 bg-info-wash p-4">
@@ -354,14 +408,14 @@ export default async function PlanPage({
               />
               <button
                 type="submit"
-                className="font-display min-h-11 rounded-[3px] bg-primary px-5 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90"
+                className="min-h-11 rounded-[3px] bg-primary px-5 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90"
               >
                 确认并创建新版本
               </button>
             </form>
             <Link
               href={`/trips/${id}/plan`}
-              className="font-display inline-flex min-h-11 items-center rounded-[3px] border border-border bg-surface px-5 text-base tracking-wide transition-colors hover:bg-surface-muted"
+              className="inline-flex min-h-11 items-center rounded-[3px] border border-border bg-surface px-5 text-base tracking-wide transition-colors hover:bg-surface-muted"
             >
               取消
             </Link>
@@ -370,10 +424,10 @@ export default async function PlanPage({
       ) : null}
 
       <div className="rounded-[3px] border border-border bg-surface p-4">
-        <h2 className="font-display text-lg font-medium tracking-wide">用自然语言提出变更</h2>
+        <h2 className="font-display text-lg font-medium tracking-wide">随时告诉搭子您的新想法</h2>
         <p className="mt-1 text-sm text-muted">
-          例如：“加入香港历史博物馆，如果暴雨就不要去山顶” 或
-          “返程航班改成 16:15”。系统会先展示影响，确认后才创建新版本。
+          输入想临时调整的内容或突发情况（例如：“加入香港历史博物馆，如果暴雨就不要去山顶” 或
+          “返程航班改成 16:15”）。系统将保持其余行程稳定，为您预览调整方案。
         </p>
         <form action={previewChangeAction} className="mt-3 flex flex-col gap-3 sm:flex-row">
           <input type="hidden" name="tripId" value={id} />
@@ -382,12 +436,12 @@ export default async function PlanPage({
             name="changeText"
             required
             maxLength={500}
-            className="font-display min-h-11 flex-1 rounded-[3px] border border-border bg-background px-3 text-base"
-            placeholder="输入变更请求…"
+            className="min-h-11 flex-1 rounded-[3px] border border-border bg-background px-3 text-base"
+            placeholder="输入变更请求… 例如：下暴雨改去室内博物馆、下山改乘缆车"
           />
           <button
             type="submit"
-            className="font-display min-h-11 rounded-[3px] bg-primary px-5 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90"
+            className="min-h-11 rounded-[3px] bg-primary px-5 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90"
           >
             预览影响
           </button>

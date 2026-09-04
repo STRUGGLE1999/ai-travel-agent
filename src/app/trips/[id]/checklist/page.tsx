@@ -72,12 +72,12 @@ export default async function ChecklistPage({
               <dl className="mt-2 grid gap-x-6 gap-y-1 text-sm text-muted sm:grid-cols-2">
                 <div className="flex gap-2">
                   <dt>使用日期</dt>
-                  <dd className="font-mono">{task.usageDate}</dd>
+                  <dd className="tabular-nums font-medium text-foreground">{task.usageDate}</dd>
                 </div>
                 {task.suggestedTimeWindow ? (
                   <div className="flex gap-2">
                     <dt>建议时段</dt>
-                    <dd>{task.suggestedTimeWindow}</dd>
+                    <dd className="tabular-nums">{task.suggestedTimeWindow}</dd>
                   </div>
                 ) : null}
                 {task.ticketType ? (
@@ -89,7 +89,7 @@ export default async function ChecklistPage({
                 {task.partySize ? (
                   <div className="flex gap-2">
                     <dt>人数</dt>
-                    <dd>{task.partySize} 人</dd>
+                    <dd><span className="tabular-nums font-medium">{task.partySize}</span> 人</dd>
                   </div>
                 ) : null}
                 {task.sourceName ? (
@@ -123,7 +123,7 @@ export default async function ChecklistPage({
                       <input type="hidden" name="status" value={status} />
                       <button
                         type="submit"
-                        className="font-display min-h-11 rounded-[3px] border border-border bg-surface px-4 text-base tracking-wide transition-colors hover:bg-surface-muted"
+                        className="min-h-11 rounded-[3px] border border-border bg-surface px-4 text-base font-medium tracking-wide transition-colors hover:bg-surface-muted"
                       >
                         标记为{STATUS_LABEL[status]}
                       </button>

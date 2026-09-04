@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { BrandMark } from "@/components/brand/brand-mark";
-import { ModeBadge } from "@/components/status/mode-badge";
+import { TrustWhitepaperDrawer } from "@/components/trust/trust-whitepaper-drawer";
 import type { DataMode } from "@/domain";
 import { cn } from "@/lib/cn";
 
@@ -20,7 +20,6 @@ export function SiteHeader({
   tripTitle,
   statusLabel,
   statusTone = "neutral",
-  demoReason,
 }: {
   dataMode: DataMode;
   persistenceLabel?: string;
@@ -30,7 +29,7 @@ export function SiteHeader({
   demoReason?: string | null;
 }) {
   return (
-    <header className="border-b border-border bg-surface/80">
+    <header className="no-print border-b border-border bg-surface/80">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-3">
           <Link
@@ -50,7 +49,7 @@ export function SiteHeader({
           {statusLabel ? (
             <span
               className={cn(
-                "font-display rounded-[2px] px-2 py-0.5 text-sm font-medium tracking-wide",
+                "rounded-[2px] px-2 py-0.5 text-sm font-medium tracking-wide",
                 TONE_CLASS[statusTone],
               )}
             >
@@ -58,11 +57,12 @@ export function SiteHeader({
             </span>
           ) : null}
         </div>
-        <ModeBadge
-          dataMode={dataMode}
-          persistenceLabel={persistenceLabel}
-          demoReason={demoReason}
-        />
+        <div className="flex items-center gap-3">
+          <TrustWhitepaperDrawer
+            dataMode={dataMode}
+            persistenceLabel={persistenceLabel}
+          />
+        </div>
       </div>
     </header>
   );

@@ -55,6 +55,7 @@ const CHANGE_SYSTEM_PROMPT = [
     { "type": "REMOVE_PLACE", "name": "地点名" },
     { "type": "SET_WEATHER", "condition": "SUNNY|RAIN|STORM" },
     { "type": "CHANGE_TICKET", "ticketType": "tram-single|tram-return|tram-sky-pass 或票名" },
+    { "type": "CHANGE_TRANSIT", "role": "DESCENT", "transportMode": "TRAM|TAXI|WALK|TRANSIT|FERRY", "title": "缆车下山" },
     { "type": "CHANGE_FLIGHT", "direction": "OUTBOUND|RETURN", "time": "HH:MM" },
     { "type": "CHANGE_LODGING", "locationHint": "位置描述", "night": 4 },
     { "type": "UPDATE_CONSTRAINT", "category": "分类", "summary": "摘要" }

@@ -9,13 +9,13 @@ import type { TripStatus } from "@/domain";
 export const dynamic = "force-dynamic";
 
 const STATUS_LABEL: Record<TripStatus, string> = {
-  DRAFT: "草稿",
-  NEEDS_CONFIRMATION: "待确认约束",
+  DRAFT: "草案",
+  NEEDS_CONFIRMATION: "待把关底线",
   PLANNING: "规划中",
   VERIFYING: "核验中",
-  BLOCKED: "存在阻断冲突",
-  READY_WITH_WARNINGS: "可执行（有警示）",
-  READY: "可执行",
+  BLOCKED: "有动线待协调",
+  READY_WITH_WARNINGS: "已就绪 · 附温馨提示",
+  READY: "已就绪 · 可安心成行",
 };
 
 const STATUS_TONE: Record<TripStatus, StatusTone> = {
@@ -50,9 +50,9 @@ export default async function TripLayout({
         statusLabel={trip ? STATUS_LABEL[trip.status] : undefined}
         statusTone={trip ? STATUS_TONE[trip.status] : "neutral"}
       />
-      <div className="mx-auto grid min-h-[calc(100vh-5.5rem)] max-w-6xl md:grid-cols-[11rem_1fr]">
+      <div className="mx-auto grid min-h-[calc(100vh-5.5rem)] max-w-6xl md:grid-cols-[11rem_1fr] print:block print:max-w-none print:min-h-0">
         <TripNav tripId={id} />
-        <div className="min-w-0 px-5 py-8 md:px-8">{children}</div>
+        <div className="min-w-0 px-5 py-8 md:px-8 print:p-0">{children}</div>
       </div>
     </div>
   );

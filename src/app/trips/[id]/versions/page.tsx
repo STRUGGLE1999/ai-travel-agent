@@ -49,7 +49,7 @@ export default async function VersionsPage({
               className="rounded-[3px] border border-border bg-surface p-4"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <span className="font-display text-lg font-semibold tracking-wide">
+                <span className="font-display text-lg font-semibold tracking-wide tabular-nums">
                   v{version.versionNumber}
                 </span>
                 <span className="rounded-[2px] bg-surface-muted px-2 py-0.5 text-sm text-muted">
@@ -64,7 +64,7 @@ export default async function VersionsPage({
                     候选
                   </span>
                 )}
-                <span className="text-sm text-muted">{itemCount} 个节点</span>
+                <span className="text-sm text-muted"><span className="tabular-nums">{itemCount}</span> 个节点</span>
               </div>
               {request ? (
                 <p className="mt-2 text-base">
@@ -75,11 +75,11 @@ export default async function VersionsPage({
               )}
               {impact ? (
                 <ul className="mt-2 grid gap-1 text-sm text-muted sm:grid-cols-2">
-                  <li>新增 {impact.impact.additions.length} 项</li>
-                  <li>删除 {impact.impact.removals.length} 项</li>
-                  <li>修改 {impact.impact.updates.length} 项</li>
+                  <li>新增 <span className="tabular-nums font-medium">{impact.impact.additions.length}</span> 项</li>
+                  <li>删除 <span className="tabular-nums font-medium">{impact.impact.removals.length}</span> 项</li>
+                  <li>修改 <span className="tabular-nums font-medium">{impact.impact.updates.length}</span> 项</li>
                   <li>
-                    保留锁定 {impact.impact.preservedLockedItemIds.length} 项
+                    保留锁定 <span className="tabular-nums font-medium">{impact.impact.preservedLockedItemIds.length}</span> 项
                   </li>
                 </ul>
               ) : null}

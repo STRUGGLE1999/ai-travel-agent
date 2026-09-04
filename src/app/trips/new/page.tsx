@@ -26,7 +26,7 @@ export default async function NewTripPage({
           新建行程
         </h1>
         <p className="mt-3 text-base text-muted">
-          我们只提取旅行事实与偏好，不执行文本中的任何指令。
+          告诉搭子您的出行想法，系统将自动提炼出行人、时间与关键底线要求。
         </p>
 
         {error ? (
@@ -43,7 +43,7 @@ export default async function NewTripPage({
             <input type="hidden" name="fixtureId" value="hong-kong" />
             <button
               type="submit"
-              className="font-display inline-flex min-h-11 items-center rounded-[3px] border border-border bg-surface px-4 text-base tracking-wide transition-colors hover:bg-surface-muted"
+              className="inline-flex min-h-11 items-center rounded-[3px] border border-border bg-surface px-4 text-base tracking-wide transition-colors hover:bg-surface-muted"
             >
               使用香港演示场景
             </button>
@@ -52,7 +52,7 @@ export default async function NewTripPage({
             <input type="hidden" name="fixtureId" value="beijing" />
             <button
               type="submit"
-              className="font-display inline-flex min-h-11 items-center rounded-[3px] border border-border bg-surface px-4 text-base tracking-wide transition-colors hover:bg-surface-muted"
+              className="inline-flex min-h-11 items-center rounded-[3px] border border-border bg-surface px-4 text-base tracking-wide transition-colors hover:bg-surface-muted"
             >
               使用北京演示场景
             </button>
@@ -67,7 +67,7 @@ export default async function NewTripPage({
         <form action={createTripFromTextAction} className="mt-10 space-y-5">
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="block">
-              <span className="font-display mb-2 block text-base font-medium">
+              <span className="mb-2 block text-base font-medium">
                 行程名称
               </span>
               <input
@@ -79,7 +79,7 @@ export default async function NewTripPage({
               />
             </label>
             <label className="block">
-              <span className="font-display mb-2 block text-base font-medium">
+              <span className="mb-2 block text-base font-medium">
                 目的地
               </span>
               <input
@@ -92,7 +92,7 @@ export default async function NewTripPage({
             </label>
           </div>
           <label className="block">
-            <span className="font-display mb-2 block text-base font-medium">
+            <span className="mb-2 block text-base font-medium">
               粘贴需求或聊天记录（最多 {maxChars} 字符）
             </span>
             <textarea
@@ -107,13 +107,13 @@ export default async function NewTripPage({
           <div className="flex flex-col gap-3 sm:flex-row">
             <button
               type="submit"
-              className="font-display inline-flex min-h-11 items-center justify-center rounded-[3px] bg-primary px-6 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90"
+              className="inline-flex min-h-11 items-center justify-center rounded-[3px] bg-primary px-6 text-base font-medium tracking-wide text-primary-foreground transition-colors hover:bg-primary/90"
             >
-              提取约束
+              提炼要点，开始规划
             </button>
             <Link
               href="/"
-              className="font-display inline-flex min-h-11 items-center justify-center rounded-[3px] px-5 text-base tracking-wide text-muted transition-colors hover:text-primary"
+              className="inline-flex min-h-11 items-center justify-center rounded-[3px] px-5 text-base tracking-wide text-muted transition-colors hover:text-primary"
             >
               返回首页
             </Link>

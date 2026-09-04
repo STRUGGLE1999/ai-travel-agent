@@ -91,3 +91,12 @@ export type {
   LlmUsageDaily,
   ParseChangeRequestOutput,
 } from "@/domain/llm";
+
+export { calculateTripBudget } from "@/domain/budget/calculator";
+export type {
+  BudgetCategory,
+  BudgetCategorySummary,
+  BudgetItem,
+  BudgetItemSource,
+  BudgetSummary,
+} from "@/domain/budget/types";

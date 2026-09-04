@@ -5,10 +5,11 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 
 const LINKS = [
-  { href: "constraints", label: "约束" },
+  { href: "constraints", label: "底线" },
   { href: "plan", label: "计划" },
   { href: "versions", label: "版本" },
   { href: "checklist", label: "清单" },
+  { href: "handout", label: "手账" },
 ] as const;
 
 export function TripNav({ tripId }: { tripId: string }) {
@@ -17,7 +18,7 @@ export function TripNav({ tripId }: { tripId: string }) {
   return (
     <nav
       aria-label="行程导航"
-      className="border-b border-border bg-surface md:border-b-0 md:border-r"
+      className="no-print border-b border-border bg-surface md:border-b-0 md:border-r"
     >
       <ul className="flex md:flex-col md:gap-1.5 md:px-3 md:py-5">
         {LINKS.map((link) => {

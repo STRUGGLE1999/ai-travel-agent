@@ -1,10 +1,10 @@
 import { test, expect, type Page } from "@playwright/test";
 
 async function confirmAllConstraints(page: Page): Promise<void> {
-  // Click "确认并锁定" one at a time, waiting for each server action
+  // Click "确认并锁定" / "确认并锁定为底线" one at a time, waiting for each server action
   // to re-render before the next click.
   for (let i = 0; i < 12; i += 1) {
-    const buttons = page.getByRole("button", { name: "确认并锁定" });
+    const buttons = page.getByRole("button", { name: /确认并锁定/ });
     const count = await buttons.count();
     if (count === 0) {
       break;
@@ -12,16 +12,16 @@ async function confirmAllConstraints(page: Page): Promise<void> {
     await buttons.first().click();
     await expect(buttons).toHaveCount(count - 1, { timeout: 15000 });
   }
-  await expect(page.getByText("所有硬约束已确认")).toBeVisible();
+  await expect(page.getByText(/所有(硬约束已确认|固定底线已把关)/)).toBeVisible();
 }
 
 test("home page loads in demo mode", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByText("风来成行").first()).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: /先确认，\s*再成行。/ }),
+    page.getByRole("heading", { name: /先确认[，\s]*再成行/ }),
   ).toBeVisible();
-  await expect(page.getByText("演示模式")).toBeVisible();
+  await expect(page.getByText(/(演示模式|可信规划规范)/)).toBeVisible();
 });
 
 test("hong kong main loop: constraints → conflict → ticket fix → change → new version", async ({
@@ -37,14 +37,14 @@ test("hong kong main loop: constraints → conflict → ticket fix → change �
   await confirmAllConstraints(page);
 
   await page
-    .getByRole("button", { name: /确认约束并生成候选计划/ })
+    .getByRole("button", { name: /(确认约束并生成候选计划|确认底线，生成可行行程方案)/ })
     .click();
 
   // Plan workbench: the round-trip ticket default conflicts with the
   // taxi descent and blocks READY.
   await expect(page).toHaveURL(/\/plan$/);
   await expect(page.getByText("票种与下山方式不一致")).toBeVisible();
-  await expect(page.getByText("存在阻断冲突")).toBeVisible();
+  await expect(page.getByText(/(存在阻断冲突|有动线待协调)/)).toBeVisible();
 
   // Decision card: switch to the single ticket.
   const singleCard = page
@@ -53,16 +53,16 @@ test("hong kong main loop: constraints → conflict → ticket fix → change �
     .filter({ hasText: "选择此票种" });
   await singleCard.getByRole("button", { name: "选择此票种" }).click();
   await expect(page.getByText("票种与下山方式不一致")).toHaveCount(0);
-  await expect(page.getByText("可执行（有警示）")).toBeVisible();
+  await expect(page.getByText(/(可执行（有警示）|已就绪 · 附温馨提示)/)).toBeVisible();
 
   // Timeline / map interaction and MOCK sources.
   await expect(page.getByText("路线为演示数据", { exact: false })).toBeVisible();
   await page.getByRole("button", { name: /太平山顶观景/ }).click();
-  await expect(page.getByText("演示数据").first()).toBeVisible();
+  await expect(page.getByText(/(演示数据|基准参考)/).first()).toBeVisible();
 
   // Natural-language change with storm fallback.
   await page
-    .getByPlaceholder("输入变更请求…")
+    .getByPlaceholder(/输入变更请求/)
     .fill("加入香港历史博物馆，如果暴雨就不要去山顶");
   await page.getByRole("button", { name: "预览影响" }).click();
 
@@ -72,7 +72,7 @@ test("hong kong main loop: constraints → conflict → ticket fix → change �
   await expect(page.getByText("暴雨室内替代").first()).toBeVisible();
 
   await page.getByRole("button", { name: "确认并创建新版本" }).click();
-  await expect(page.getByText(/版本 v2/)).toBeVisible();
+  await expect(page.getByText(/(版本|方案) v2/)).toBeVisible();
 
   // Versions page shows both versions with diff summary.
   await page.getByRole("link", { name: "版本" }).click();
@@ -83,7 +83,7 @@ test("hong kong main loop: constraints → conflict → ticket fix → change �
   // Checklist keeps ticket type, dates and MOCK labels.
   await page.getByRole("link", { name: "清单" }).click();
   await expect(page.getByText("购买山顶缆车车票")).toBeVisible();
-  await expect(page.getByText("演示数据").first()).toBeVisible();
+  await expect(page.getByText(/(演示数据|基准参考)/).first()).toBeVisible();
 });
 
 test("mobile 390px: constraints and plan pages have no horizontal overflow", async ({

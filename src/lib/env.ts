@@ -12,6 +12,7 @@ const envSchema = z.object({
   MAX_LLM_CALLS_GLOBAL_PER_DAY: z.coerce.number().int().positive().default(100),
   MAX_SOURCE_INPUT_CHARS: z.coerce.number().int().positive().default(20000),
   LLM_CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(86400),
+  AMAP_WEB_SERVICE_KEY: z.string().min(1).optional(),
 });
 
 export type AppEnv = z.infer<typeof envSchema>;
@@ -29,6 +30,7 @@ export function getEnv(): AppEnv {
     MAX_LLM_CALLS_GLOBAL_PER_DAY: process.env.MAX_LLM_CALLS_GLOBAL_PER_DAY,
     MAX_SOURCE_INPUT_CHARS: process.env.MAX_SOURCE_INPUT_CHARS,
     LLM_CACHE_TTL_SECONDS: process.env.LLM_CACHE_TTL_SECONDS,
+    AMAP_WEB_SERVICE_KEY: process.env.AMAP_WEB_SERVICE_KEY || undefined,
   });
 }
 
@@ -50,6 +52,11 @@ export function hasLiveAiConfig(): boolean {
     hasAnthropicCredentials(env) &&
     Boolean(env.DATABASE_URL && env.RATE_LIMIT_SALT)
   );
+}
+
+export function hasAmapWebServiceConfig(): boolean {
+  const env = getEnv();
+  return Boolean(env.AMAP_WEB_SERVICE_KEY);
 }
 
 export function getDataMode(): DataMode {

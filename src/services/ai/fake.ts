@@ -200,11 +200,27 @@ export function ruleBasedChangeIntent(text: string): ParseChangeRequestOutput {
     }
   }
 
-  if (/单程票/.test(text)) {
+  if (/下山.*缆车|缆车.*下山|改回缆车|改坐缆车|改乘缆车|坐缆车下山/.test(text)) {
+    operations.push({
+      type: "CHANGE_TRANSIT",
+      role: "DESCENT",
+      transportMode: "TRAM",
+      title: "缆车下山",
+    });
+  } else if (/下山.*出租车|出租车.*下山|打车.*下山|下山.*打车/.test(text)) {
+    operations.push({
+      type: "CHANGE_TRANSIT",
+      role: "DESCENT",
+      transportMode: "TAXI",
+      title: "出租车下山",
+    });
+  }
+
+  if (/单程/.test(text)) {
     operations.push({ type: "CHANGE_TICKET", ticketType: "tram-single" });
-  } else if (/套票|摩天台/.test(text) && /票/.test(text)) {
+  } else if (/套票|摩天台/.test(text)) {
     operations.push({ type: "CHANGE_TICKET", ticketType: "tram-sky-pass" });
-  } else if (/往返票/.test(text)) {
+  } else if (/往返/.test(text)) {
     operations.push({ type: "CHANGE_TICKET", ticketType: "tram-return" });
   }
 

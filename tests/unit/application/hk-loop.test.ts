@@ -92,5 +92,16 @@ describe("hong kong demo full loop (use-case level)", () => {
     expect(items.some((item) => item.placeId === "hk-history-museum")).toBe(
       true,
     );
+
+    const { getFixture } = await import("@/fixtures");
+    const { calculateTripBudget } = await import("@/domain/budget/calculator");
+    const budget = calculateTripBudget({
+      items,
+      fixture: getFixture("hong-kong")!,
+      selectedTicketId: "tram-single",
+    });
+    expect(budget.items.some((i) => i.id === "ticket-hk-museum")).toBe(true);
+    expect(budget.totalAmount).toBeGreaterThan(0);
+    expect(budget.totalConfirmed).toBe(76 * 3);
   });
 });

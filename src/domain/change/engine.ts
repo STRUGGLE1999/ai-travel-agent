@@ -150,6 +150,42 @@ export function computeChange(input: {
         );
         break;
       }
+      case "CHANGE_TRANSIT": {
+        const target = working.find((item) => {
+          const meta = readItemMeta(item);
+          if (operation.role && meta.role === operation.role) return true;
+          return (
+            item.type === "TRANSIT" &&
+            (item.title.includes("下山") ||
+              (operation.title && item.title.includes(operation.title)))
+          );
+        });
+        if (target) {
+          const meta = readItemMeta(target);
+          const newTitle =
+            operation.title ||
+            (operation.transportMode === "TRAM"
+              ? "缆车下山"
+              : operation.transportMode === "TAXI"
+                ? "出租车下山"
+                : target.title);
+          const updatedNotes = withMeta(
+            operation.transportMode === "TRAM"
+              ? "改乘缆车下山，饱览维港全景"
+              : operation.transportMode === "TAXI"
+                ? "考虑老人体力，下山改乘出租车"
+                : (target.notes ?? ""),
+            meta,
+          );
+          recordUpdate(target, {
+            transportMode: operation.transportMode,
+            title: newTitle,
+            notes: updatedNotes,
+          });
+          bookingTaskImpacts.push(`交通方式调整为「${newTitle}」`);
+        }
+        break;
+      }
       case "UPDATE_CONSTRAINT": {
         bookingTaskImpacts.push(`约束更新请求：${operation.summary}`);
         break;

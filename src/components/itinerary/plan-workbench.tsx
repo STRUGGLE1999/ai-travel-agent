@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { cn } from "@/lib/cn";
 import { VerificationBadge } from "@/components/status/verification-badge";
+import { AmapView } from "@/components/itinerary/amap-view";
+import { SpotImpressionCard } from "@/components/itinerary/spot-impression-card";
+import { getOrInferImpression } from "@/domain/destinations/catalog";
 import type { VerificationStatus } from "@/domain";
 
 export interface WorkbenchPlace {
@@ -10,6 +13,8 @@ export interface WorkbenchPlace {
   name: string;
   mapX: number;
   mapY: number;
+  lat?: number | null;
+  lng?: number | null;
 }
 
 export interface WorkbenchItem {
@@ -50,6 +55,10 @@ export function PlanWorkbench({
 }) {
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [mobileTab, setMobileTab] = useState<"timeline" | "map">("timeline");
+  const [mapMode, setMapMode] = useState<"amap" | "schematic">(() =>
+    Boolean(process.env.NEXT_PUBLIC_AMAP_KEY) ? "amap" : "schematic",
+  );
+  const [fallbackNotice, setFallbackNotice] = useState<string | null>(null);
 
   const days = [...new Set(items.map((item) => item.day))].sort(
     (a, b) => a - b,
@@ -64,6 +73,26 @@ export function PlanWorkbench({
     visitedPlaceIds.includes(place.placeId),
   );
   const selectedItem = items.find((item) => item.id === selectedId) ?? null;
+
+  // Derive impression for selected item or fallback to first visited place of the day
+  const effectiveItem =
+    selectedItem ??
+    dayItems.find((it) => Boolean(it.placeId)) ??
+    dayItems[0] ??
+    null;
+
+  const effectivePlace = effectiveItem?.placeId
+    ? places.find((p) => p.placeId === effectiveItem.placeId)
+    : null;
+
+  const currentImpression = effectiveItem
+    ? getOrInferImpression(
+        effectiveItem.placeId,
+        effectivePlace?.name ?? effectiveItem.title,
+        effectiveItem.type,
+        { title: effectiveItem.title, notes: effectiveItem.notes },
+      )
+    : null;
 
   const selectItem = (item: WorkbenchItem) => {
     setSelectedId(item.id === selectedId ? null : item.id);
@@ -127,6 +156,10 @@ export function PlanWorkbench({
     return null;
   };
 
+  const hasVerifiedRoute = dayItems.some((it) =>
+    it.evidence.some((e) => e.status === "VERIFIED"),
+  );
+
   return (
     <div>
       {days.length > 1 ? (
@@ -142,7 +175,7 @@ export function PlanWorkbench({
               aria-selected={day === activeDay}
               onClick={() => setActiveDay(day)}
               className={cn(
-                "font-display min-h-11 rounded-t-[2px] px-4 pt-2 text-base tracking-wide transition-colors",
+                "min-h-11 rounded-t-[2px] px-4 pt-2 text-base tracking-wide transition-colors",
                 day === activeDay
                   ? "border-b-2 border-cinnabar font-medium text-foreground"
                   : "text-muted hover:text-foreground",
@@ -166,7 +199,7 @@ export function PlanWorkbench({
             aria-selected={mobileTab === tab}
             onClick={() => setMobileTab(tab)}
             className={cn(
-              "font-display min-h-11 flex-1 rounded-[3px] border px-3 text-base tracking-wide",
+              "min-h-11 flex-1 rounded-[3px] border px-3 text-base tracking-wide",
               mobileTab === tab
                 ? "border-primary bg-primary/10 font-medium text-primary"
                 : "border-border bg-surface text-muted",
@@ -223,7 +256,7 @@ export function PlanWorkbench({
                   )}
                 >
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-display text-sm font-medium tracking-wider text-muted">
+                    <span className="text-sm font-medium tracking-wider text-muted tabular-nums">
                       {item.startAt}–{item.endAt}
                     </span>
                     <span className="rounded-[2px] bg-surface-muted px-1.5 text-sm text-muted">
@@ -237,6 +270,11 @@ export function PlanWorkbench({
                     {isBlocking ? (
                       <span className="rounded-[2px] bg-cinnabar/10 px-1.5 text-sm text-cinnabar">
                         阻断
+                      </span>
+                    ) : null}
+                    {item.placeId ? (
+                      <span className="rounded-[2px] border border-[#d5cfc2] bg-[#f5f1e8] px-1.5 text-xs text-[#52635e]">
+                        📷 景点图文
                       </span>
                     ) : null}
                   </div>
@@ -268,6 +306,11 @@ export function PlanWorkbench({
                           暂无与此节点直接关联的来源记录。
                         </p>
                       )}
+                      {item.placeId && currentImpression ? (
+                        <div className="mt-3 md:hidden">
+                          <SpotImpressionCard impression={currentImpression} />
+                        </div>
+                      ) : null}
                     </div>
                   ) : null}
                 </button>
@@ -282,79 +325,158 @@ export function PlanWorkbench({
             mobileTab === "timeline" && "hidden md:block",
           )}
         >
-          <p className="mb-3 flex items-center gap-2 text-sm tracking-wide text-muted">
-            <span
-              aria-hidden="true"
-              className="font-display rounded-[2px] bg-warning/10 px-1.5 text-warning-foreground"
-            >
-              ◇
-            </span>
-            示意地图 · 路线为演示数据，不代表真实导航
-          </p>
-          <div className="flex min-h-0 flex-1 items-center rounded-[2px] border border-cinnabar/15 bg-[#ecf0e8] px-3 py-4">
-            <svg
-              viewBox={
-                bounds
-                  ? `${bounds.x} ${bounds.y} ${bounds.w} ${bounds.h}`
-                  : "0 0 100 100"
-              }
-              preserveAspectRatio="xMidYMid meet"
-              role="img"
-              aria-label={`Day ${activeDay} 行程示意地图`}
-              className="mx-auto h-full w-full max-w-[26rem]"
-            >
-              {routePoints ? (
-                <polyline
-                  points={routePoints}
-                  fill="none"
-                  stroke="#34584e"
-                  strokeWidth="0.8"
-                  strokeDasharray="2 1.4"
-                />
-              ) : null}
-              {dayPlaces.map((place, index) => {
-                const isSelected = selectedItem?.placeId === place.placeId;
-                return (
-                  <g
-                    key={place.placeId}
-                    onClick={() => selectMarker(place.placeId)}
-                    className="cursor-pointer"
-                    role="button"
-                    aria-label={`定位到 ${place.name}`}
-                  >
-                    <circle
-                      cx={place.mapX}
-                      cy={place.mapY}
-                      r={isSelected ? 4 : 3}
-                      fill={isSelected ? "#a63a2f" : "#34584e"}
-                      stroke="#faf6ee"
-                      strokeWidth="0.8"
-                    />
-                    <text
-                      x={place.mapX}
-                      y={place.mapY - 5}
-                      textAnchor="middle"
-                      fontSize="3.4"
-                      fill="#2b2e2a"
-                    >
-                      {index + 1}. {labelFor(place.name)}
-                    </text>
-                  </g>
-                );
-              })}
-            </svg>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <p className="flex items-center gap-2 text-sm tracking-wide text-muted">
+              <span
+                aria-hidden="true"
+                className={cn(
+                  "rounded-[2px] px-1.5",
+                  hasVerifiedRoute
+                    ? "bg-primary/10 text-primary"
+                    : "bg-warning/10 text-warning-foreground",
+                )}
+              >
+                {hasVerifiedRoute ? "✓" : "◇"}
+              </span>
+              {mapMode === "amap"
+                ? `Day ${activeDay} 高德地图 · ${hasVerifiedRoute ? "路线已实时核验" : "路线为演示数据"}`
+                : `Day ${activeDay} 拓扑图 · ${hasVerifiedRoute ? "路线已实时核验" : "路线为演示数据"}`}
+            </p>
+            <div className="flex items-center rounded-[3px] border border-border bg-surface-muted/60 p-0.5 text-xs">
+              <button
+                type="button"
+                onClick={() => {
+                  setFallbackNotice(null);
+                  setMapMode("amap");
+                }}
+                className={cn(
+                  "rounded-[2px] px-2 py-0.5 transition-colors tracking-wide",
+                  mapMode === "amap"
+                    ? "bg-surface font-medium text-primary shadow-xs"
+                    : "text-muted hover:text-foreground",
+                )}
+              >
+                高德地图
+              </button>
+              <button
+                type="button"
+                onClick={() => setMapMode("schematic")}
+                className={cn(
+                  "rounded-[2px] px-2 py-0.5 transition-colors tracking-wide",
+                  mapMode === "schematic"
+                    ? "bg-surface font-medium text-primary shadow-xs"
+                    : "text-muted hover:text-foreground",
+                )}
+              >
+                拓扑图
+              </button>
+            </div>
           </div>
+
+          {fallbackNotice && mapMode === "schematic" ? (
+            <p className="mb-2 text-xs text-danger/80">
+              {fallbackNotice}
+            </p>
+          ) : null}
+
+          {mapMode === "amap" ? (
+            <div className="flex min-h-[19rem] flex-1 items-center overflow-hidden rounded-[2px] border border-cinnabar/15 bg-[#ecf0e8]">
+              <AmapView
+                places={dayPlaces.map((p) => ({
+                  placeId: p.placeId,
+                  name: p.name,
+                  lat: p.lat ?? null,
+                  lng: p.lng ?? null,
+                }))}
+                selectedPlaceId={selectedItem?.placeId ?? null}
+                onSelectPlace={selectMarker}
+                onFallback={(reason) => {
+                  setFallbackNotice(reason);
+                  setMapMode("schematic");
+                }}
+              />
+            </div>
+          ) : (
+            <div className="flex min-h-0 flex-1 items-center rounded-[2px] border border-cinnabar/15 bg-[#ecf0e8] px-3 py-4">
+              <svg
+                viewBox={
+                  bounds
+                    ? `${bounds.x} ${bounds.y} ${bounds.w} ${bounds.h}`
+                    : "0 0 100 100"
+                }
+                preserveAspectRatio="xMidYMid meet"
+                role="img"
+                aria-label={`Day ${activeDay} 行程示意地图`}
+                className="mx-auto h-full w-full max-w-[26rem]"
+              >
+                {routePoints ? (
+                  <polyline
+                    points={routePoints}
+                    fill="none"
+                    stroke="#34584e"
+                    strokeWidth="0.8"
+                    strokeDasharray="2 1.4"
+                  />
+                ) : null}
+                {dayPlaces.map((place, index) => {
+                  const isSelected = selectedItem?.placeId === place.placeId;
+                  return (
+                    <g
+                      key={place.placeId}
+                      onClick={() => selectMarker(place.placeId)}
+                      className="cursor-pointer"
+                      role="button"
+                      aria-label={`定位到 ${place.name}`}
+                    >
+                      <circle
+                        cx={place.mapX}
+                        cy={place.mapY}
+                        r={isSelected ? 4 : 3}
+                        fill={isSelected ? "#a63a2f" : "#34584e"}
+                        stroke="#faf6ee"
+                        strokeWidth="0.8"
+                      />
+                      <text
+                        x={place.mapX}
+                        y={place.mapY - 5}
+                        textAnchor="middle"
+                        fontSize="3.4"
+                        fill="#2b2e2a"
+                      >
+                        {index + 1}. {labelFor(place.name)}
+                      </text>
+                    </g>
+                  );
+                })}
+              </svg>
+            </div>
+          )}
           {selectedItem?.placeId ? (
             <p className="mt-2 text-sm text-muted">
               已定位：
-              {places.find((place) => place.placeId === selectedItem.placeId)
-                ?.name ?? selectedItem.title}
+              <strong className="text-foreground">
+                {places.find((place) => place.placeId === selectedItem.placeId)?.name ?? selectedItem.title}
+              </strong>
             </p>
           ) : (
             <p className="mt-2 text-sm text-muted">
               点击时间轴节点或地图标记可互相定位。
             </p>
           )}
+
+          {currentImpression ? (
+            <div className="mt-4 border-t border-border pt-3">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-xs font-semibold tracking-wider text-[#34584e]">
+                  {selectedItem ? "✦ 当前选中 · 景点图文锦囊" : "✦ 当日精选 · 景点图文锦囊"}
+                </span>
+                <span className="text-[11px] text-muted">
+                  点击左侧节点切换
+                </span>
+              </div>
+              <SpotImpressionCard impression={currentImpression} />
+            </div>
+          ) : null}
         </div>
       </div>
     </div>

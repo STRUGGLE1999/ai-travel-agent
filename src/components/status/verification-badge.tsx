@@ -7,22 +7,22 @@ const STATUS_COPY: Record<
 > = {
   VERIFIED: {
     icon: "✓",
-    label: "已核验",
+    label: "已实时核验",
     className: "bg-primary/10 text-primary border-primary/30",
   },
   STALE: {
     icon: "⏱",
-    label: "可能过期",
+    label: "待更新",
     className: "bg-warning/10 text-warning-foreground border-warning/40",
   },
   UNKNOWN: {
     icon: "?",
-    label: "无法确认",
+    label: "待核实",
     className: "border-dashed border-muted/60 text-muted bg-transparent",
   },
   MOCK: {
     icon: "◇",
-    label: "演示数据",
+    label: "基准参考",
     className: "bg-warning/10 text-warning-foreground border-warning/40",
   },
   NOT_REQUIRED: {

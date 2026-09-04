@@ -160,4 +160,21 @@ describe("hong kong changes (HKG-05 / HKG-06)", () => {
     expect(lunch).toBeDefined();
     expect(result.impact.removals).toHaveLength(0);
   });
+
+  it("updates descent transit mode to tram when requested", () => {
+    const items = hkItems();
+    const result = computeChange({
+      request: "把下山方式改回缆车",
+      intent: ruleBasedChangeIntent("把下山方式改回缆车"),
+      items,
+      fixture: HONG_KONG_FIXTURE,
+      planVersionId: "ver_hk",
+      currentTicketId: "tram-return",
+    });
+    const descent = result.nextItems.find(
+      (item) => readItemMeta(item).role === "DESCENT",
+    );
+    expect(descent?.transportMode).toBe("TRAM");
+    expect(descent?.title).toBe("缆车下山");
+  });
 });

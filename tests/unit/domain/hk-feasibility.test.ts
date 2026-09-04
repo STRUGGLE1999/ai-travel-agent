@@ -44,8 +44,8 @@ function buildContext(selectedTicketId: string | null) {
 }
 
 describe("hong kong feasibility (HKG-03 / HKG-08)", () => {
-  it("blocks READY when round-trip tram ticket meets taxi descent", () => {
-    const result = runFeasibilityChecks(buildContext("tram-return"));
+  it("blocks READY when round-trip tram ticket meets taxi descent", async () => {
+    const result = await runFeasibilityChecks(buildContext("tram-return"));
     const mismatch = result.conflicts.find(
       (conflict) => conflict.code === "TICKET_PLAN_MISMATCH",
     );
@@ -56,8 +56,8 @@ describe("hong kong feasibility (HKG-03 / HKG-08)", () => {
     ).toBe("BLOCKED");
   });
 
-  it("clears the mismatch with a single ticket but stays READY_WITH_WARNINGS on MOCK data", () => {
-    const result = runFeasibilityChecks(buildContext("tram-single"));
+  it("clears the mismatch with a single ticket but stays READY_WITH_WARNINGS on MOCK data", async () => {
+    const result = await runFeasibilityChecks(buildContext("tram-single"));
     expect(
       result.conflicts.some(
         (conflict) => conflict.code === "TICKET_PLAN_MISMATCH",
@@ -74,8 +74,8 @@ describe("hong kong feasibility (HKG-03 / HKG-08)", () => {
     ).toBe(true);
   });
 
-  it("also flags the sky pass combo against a taxi descent", () => {
-    const result = runFeasibilityChecks(buildContext("tram-sky-pass"));
+  it("also flags the sky pass combo against a taxi descent", async () => {
+    const result = await runFeasibilityChecks(buildContext("tram-sky-pass"));
     expect(
       result.conflicts.some(
         (conflict) => conflict.code === "TICKET_PLAN_MISMATCH",
@@ -83,13 +83,13 @@ describe("hong kong feasibility (HKG-03 / HKG-08)", () => {
     ).toBe(true);
   });
 
-  it("detects opening-window violations", () => {
+  it("detects opening-window violations", async () => {
     const ctx = buildContext(null);
     const peak = ctx.items.find((item) => item.placeId === "hk-victoria-peak");
     expect(peak).toBeDefined();
     peak!.startAt = "08:00";
     peak!.endAt = "09:00";
-    const result = runFeasibilityChecks(ctx);
+    const result = await runFeasibilityChecks(ctx);
     expect(
       result.conflicts.some(
         (conflict) => conflict.code === "OUTSIDE_OPENING_HOURS",
@@ -97,13 +97,13 @@ describe("hong kong feasibility (HKG-03 / HKG-08)", () => {
     ).toBe(true);
   });
 
-  it("detects time overlaps", () => {
+  it("detects time overlaps", async () => {
     const ctx = buildContext(null);
     const lunch = ctx.items.find((item) => item.type === "MEAL");
     expect(lunch).toBeDefined();
     lunch!.startAt = "10:30";
     lunch!.endAt = "12:00";
-    const result = runFeasibilityChecks(ctx);
+    const result = await runFeasibilityChecks(ctx);
     expect(
       result.conflicts.some((conflict) => conflict.code === "TIME_OVERLAP"),
     ).toBe(true);
